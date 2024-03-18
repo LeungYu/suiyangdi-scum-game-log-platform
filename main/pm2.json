@@ -1,0 +1,15 @@
+{
+  "script": "./dist/main.js",
+  "name": "scum-log-tool",
+  "exec_mode": "cluster",
+  "instances": "1",
+  "merge_logs": true,
+  "env": {
+    "SERVER_NODE_ENV": "production"
+  },
+  "env_production": {
+    "SERVER_NODE_ENV": "production"
+  },
+  "max_memory_restart": "700M",
+  "cron_restart": "0 7 * * *"
+}

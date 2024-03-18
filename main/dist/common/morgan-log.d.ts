@@ -1,0 +1,13 @@
+export declare function createMorgan(): Promise<void>;
+export declare function logBussiness(...contents: any[]): Promise<void>;
+export declare function logScheduleBackup(...contents: any[]): Promise<void>;
+export declare function logGPortalProccessLog(print: boolean, ...contents: any[]): Promise<void>;
+export declare function logGPortalProccessOtherLog(print: boolean, ...contents: any[]): Promise<void>;
+export declare function logNitradoProccessLog(print: boolean, ...contents: any[]): Promise<void>;
+export declare function logGGHostProccessLog(print: boolean, ...contents: any[]): Promise<void>;
+export declare function logGGHostProccessOtherLog(print: boolean, ...contents: any[]): Promise<void>;
+export declare function logServerKill2LoginLog(print: boolean, ...contents: any[]): Promise<void>;
+export declare function logServerAdmin2ChatLogLog(print: boolean, ...contents: any[]): Promise<void>;
+export declare function logServerActions2ViolationsLogLog(print: boolean, ...contents: any[]): Promise<void>;
+export declare function logServerStatus(print: boolean, ...contents: any[]): Promise<void>;
+export declare function getMorgan(): any;

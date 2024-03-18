@@ -1,0 +1,1 @@
+{"version":3,"file":"page-data-builder.js","sourceRoot":"","sources":["../../src/common/page-data-builder.ts"],"names":[],"mappings":";;;AACA,SAAgB,eAAe,CAAC,QAAyB,EAAE,IAAU;IACnE,OAAO;QACL,QAAQ,EAAE,IAAI,CAAC,QAAQ;QACvB,OAAO,EAAE,IAAI,CAAC,OAAO,GAAG,CAAC;QACzB,KAAK,EAAE,QAAQ,CAAC,CAAC,CAAC;QAClB,IAAI,EAAE,QAAQ,CAAC,CAAC,CAAC;KAClB,CAAC;AACJ,CAAC;AAPD,0CAOC"}
