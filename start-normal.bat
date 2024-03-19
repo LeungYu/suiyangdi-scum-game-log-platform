@@ -1,3 +1,3 @@
 @echo
 cd ./main
-npm run start:prod-normal
+npm run start:prod-multi
