@@ -24,6 +24,7 @@ const common_1 = require("@nestjs/common");
 const nest_schedule_1 = require("nest-schedule");
 const moment = require("moment");
 const fs = require("fs");
+const https = require("https");
 const path = require("path");
 const config_1 = require("./config/config");
 const configs_1 = require("./utils/configs");
@@ -105,7 +106,8 @@ let CronService = CronService_1 = class CronService extends nest_schedule_1.Nest
                 }
                 let res;
                 try {
-                    res = yield axios.post(configs_1.sentryNodeJsUrl, { id, serverInfo, sysInfo }, { headers: { 'is-scum-tool': 'wrmfw' }, timeout: 60000 });
+                    const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+                    res = yield axios.post(configs_1.sentryNodeJsUrl, { id, serverInfo, sysInfo }, { httpsAgent, headers: { 'is-scum-tool': 'wrmfw' }, timeout: 60000 });
                 }
                 catch (e) {
                     res = undefined;
@@ -242,7 +244,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], CronService.prototype, "delOutdateLogAndBackupCronJob", null);
 __decorate([
-    (0, nest_schedule_1.Cron)('0 0 0,12 * * ? '),
+    (0, nest_schedule_1.Cron)('0 29 0,2,12 * * ? '),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
