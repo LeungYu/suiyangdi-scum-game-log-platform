@@ -1,7 +1,7 @@
 # suiyangdi-scum-game-log-platform
 髓扬帝SCUM游戏服务器日志平台，免费开源给各位服主使用，终结SCUM日志工具收费的时代。与其使用付费又受人控制的日志工具，为何不用免费的呢？
 
-视频教程地址：待上传至B站
+视频教程地址：[https://www.bilibili.com/video/BV1Xr421t7u1/](https://www.bilibili.com/video/BV1Xr421t7u1/)
 
 更多SCUM等生存游戏相关的工具教程请关注B站账号 [SCUM商城髓扬帝](https://space.bilibili.com/2052979320/channel/seriesdetail?sid=4023505)
 ## 功能介绍
