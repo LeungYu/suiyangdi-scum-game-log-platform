@@ -507,13 +507,6 @@ let ServerSchedulesGportalServerLogQueueService = ServerSchedulesGportalServerLo
     proccessAdmin2ChatLogs(cookies, adminLogFileNames, chatLogFileNames) {
         return new Promise((resolveAll) => __awaiter(this, void 0, void 0, function* () {
             try {
-                let resBuyArtifactRightMonitor = yield this.serverConfigService.getServerConfig({ name: 'BuyArtifactRightMonitor' });
-                let rawBuyArtifactRightMonitor = JSON.parse(resBuyArtifactRightMonitor.value).value;
-                let buyArtifactRightMonitor = rawBuyArtifactRightMonitor && rawBuyArtifactRightMonitor instanceof Array ? rawBuyArtifactRightMonitor : [];
-                const buyArtifactRightMonitorJson = {};
-                buyArtifactRightMonitor.forEach((item) => {
-                    buyArtifactRightMonitorJson[item.steamId] = item;
-                });
                 const [rawAdminLogsJsonArray, rawChatLogsJsonArray] = yield Promise.all([
                     this.proccessAdminLogs(cookies, adminLogFileNames),
                     this.proccessChatLogs(cookies, chatLogFileNames)
