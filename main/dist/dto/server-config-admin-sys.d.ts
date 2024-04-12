@@ -4,6 +4,7 @@ export declare class ListServerConfigSysDto {
 }
 export declare class UpdateAllGportalSettingsSysDto {
     GameServerType: string;
+    BattleMetricServerId: string;
     ServerId: string;
     GPortalFTPUrl: string;
     GPortalFTPAccount: string;

@@ -26,6 +26,7 @@ export declare class ServerSchedulesGGHostServerLogQueueService {
     private readonly violationsRecordService;
     private readonly economyService;
     constructor(serverConfigService: ServerConfigService, userLoginService: UserLoginService, killService: KillService, adminCommandService: AdminCommandService, chatMessageService: ChatMessageService, actionsRecordService: ActionsRecordService, violationsRecordService: ViolationsRecordService, economyService: EconomyService);
+    static updateFlag: any;
     static ggHostLogsInstance: any;
     add(task: GGHostServerLogJobProps, opts?: JobOpts): Promise<void>;
     serverLogQueueHandler(): void;
@@ -65,5 +66,6 @@ export declare class ServerSchedulesGGHostServerLogQueueService {
     proccessViolationsLog(violationsLog: any): Promise<unknown>;
     proccessEconomyLogs(economyLogFileNames: any): Promise<unknown>;
     proccessEconomyLog(economyLog: any): Promise<unknown>;
+    proccessServerStatus(): Promise<unknown>;
 }
 export {};

@@ -170,6 +170,8 @@ exports.tranferChatMessageLog = tranferChatMessageLog;
 const normalMineLogRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \[LogTrap\] (Crafted|Armed|Disarmed)\. User: (([\s|\S]*) \((\d*), (\d{17})\)|N\/A)\. Trap name: ([\s|\S]*)\. Location: X=([\s|\S]*) Y=([\s|\S]*) Z=([\s|\S]*)/;
 const triggeredMineLogRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \[LogTrap\] (Triggered)\. User: (([\s|\S]*) \((\d*), (\d{17})\)|N\/A)\. Trap name: ([\s|\S]*)\. Owner: (([\s|\S]*) \((\d*), (\d{17})\)|N\/A|-1\(\)|0\(World\))\. Location: X=([\s|\S]*) Y=([\s|\S]*) Z=([\s|\S]*)/;
 const triggeredWithoutOwnerMineLogRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \[LogTrap\] (Triggered)\. User: (([\s|\S]*) \((\d*), (\d{17})\)|N\/A)\. Trap name: ([\s|\S]*)\. Location: X=([\s|\S]*) Y=([\s|\S]*) Z=([\s|\S]*)/;
+const createdFlagLogRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \[LogBaseBuilding\] \[Flag\] Created FlagId: ([\s|\S]*) Owner: ((\d{17})\s?\((\d*), ([\s|\S]*)\)|N\/A|-1\(\)|0\(World\)) Location: X=([\s|\S]*) Y=([\s|\S]*) Z=([\s|\S]*)/;
+const destroyedFlagLogRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \[LogBaseBuilding\] \[Flag\] Destroyed FlagId: ([\s|\S]*) Owner: ((\d{17})\s?\((\d*), ([\s|\S]*)\)|N\/A|-1\(\)|0\(World\)) Location: X=([\s|\S]*) Y=([\s|\S]*) Z=([\s|\S]*)/;
 const overtakeStartedLogRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \[LogBaseBuilding\] \[Flag\] Overtake started\. User: (([\s|\S]*) \((\d*), (\d{17})\)|N\/A) Location: X=([\s|\S]*) Y=([\s|\S]*) Z=([\s|\S]*)\. Owner: ((\d{17})\s?\((\d*), ([\s|\S]*)\)|N\/A|-1\(\)|0\(World\))\. FlagId: ([\s|\S]*)\. Location: X=([\s|\S]*) Y=([\s|\S]*) Z=([\s|\S]*)/;
 const overtakeCanceledLogRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \[LogBaseBuilding\] \[Flag\] Overtake canceled\. User: (([\s|\S]*) \((\d*), (\d{17})\)|N\/A)\. Owner: ((\d{17})\s?\((\d*), ([\s|\S]*)\)|N\/A|-1\(\)|0\(World\))\. FlagId: ([\s|\S]*)\. Location: X=([\s|\S]*) Y=([\s|\S]*) Z=([\s|\S]*)/;
 const overtakeAbandonedLogRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \[LogBaseBuilding\] \[Flag\] Abandoned on overtake\. Overtaker: ((\d{17})\s?\((\d*), ([\s|\S]*)\)|N\/A|-1\(\)|0\(World\))\. Old owner: ((\d{17})\s?\((\d*), ([\s|\S]*)\)|N\/A|-1\(\)|0\(World\))\. FlagId: ([\s|\S]*)\. Location: X=([\s|\S]*) Y=([\s|\S]*) Z=([\s|\S]*)/;
@@ -178,6 +180,8 @@ const miniGameLockpickLogRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(
 const miniGameBombDefusalWithoutLockTypeLogRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \[LogMinigame\] \[BP_BombDefusalMinigame_C\] User: (([\s|\S]*) \((\d*), (\d{17})\)|N\/A)\. Success: ([\s|\S]*)\. Elapsed time: ([\s|\S]*)\. Failed attempts: (\d*)\. Target object: ([\s|\S]*)\. User owner: ((\d*)\(\[(\d{17})\] ([\s|\S]*)\)|N\/A|-1\(\)|0\(World\))\. Location: X=([\s|\S]*) Y=([\s|\S]*) Z=([\s|\S]*)/;
 const miniGameBombDefusalWithLockTypeLogRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \[LogMinigame\] \[BP_LockBombDefusalMinigame_C\] User: (([\s|\S]*) \((\d*), (\d{17})\)|N\/A)\. Success: ([\s|\S]*)\. Elapsed time: ([\s|\S]*)\. Failed attempts: (\d*)\. Target object: ([\s|\S]*)\. Lock type: ([\s|\S]*)\. User owner: ((\d*)\(\[(\d{17})\] ([\s|\S]*)\)|N\/A|-1\(\)|0\(World\))\. Location: X=([\s|\S]*) Y=([\s|\S]*) Z=([\s|\S]*)/;
 const miniGameBankATMLogRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \[LogMinigame\] \[[\s|\S]*BankATM[\s|\S]*\] User: (([\s|\S]*) \((\d*), (\d{17})\)|N\/A)\. Success: ([\s|\S]*)\. Elapsed time: ([\s|\S]*)\. Failed attempts: (\d*)\./;
+const buryChestLogRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \[LogChest\] \[Bury\] ChestId: ([\s|\S]*) Owner: ((\d{17})\s?\((\d*), ([\s|\S]*)\)|N\/A|-1\(\)|0\(World\)) Location: X=([\s|\S]*) Y=([\s|\S]*) Z=([\s|\S]*) Burier: ((\d{17})\s?\((\d*), ([\s|\S]*)\)|N\/A|-1\(\)|0\(World\))/;
+const unburyChestLogRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \[LogChest\] \[Unbury\] ChestId: ([\s|\S]*) Owner: ((\d{17})\s?\((\d*), ([\s|\S]*)\)|N\/A|-1\(\)|0\(World\)) Location: X=([\s|\S]*) Y=([\s|\S]*) Z=([\s|\S]*) Unburier: ((\d{17})\s?\((\d*), ([\s|\S]*)\)|N\/A|-1\(\)|0\(World\))/;
 const isSpecialUserInfo = (rawUserInfo) => {
     if (rawUserInfo === 'N/A') {
         return '不存在';
@@ -196,6 +200,8 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
     const isMatchNormalMineLog = normalMineLogRegExp.test(rawText);
     const isMatchTriggeredMineLog = triggeredMineLogRegExp.test(rawText);
     const isMatchTriggeredWithoutOwnerMineLog = triggeredWithoutOwnerMineLogRegExp.test(rawText);
+    const isMatchCreatedFlagLog = createdFlagLogRegExp.test(rawText);
+    const isMatchDestroyedFlagLog = destroyedFlagLogRegExp.test(rawText);
     const isMatchOvertakeStartedLog = overtakeStartedLogRegExp.test(rawText);
     const isMatchOvertakeCanceledLog = overtakeCanceledLogRegExp.test(rawText);
     const isMatchOvertakeAbandonedLog = overtakeAbandonedLogRegExp.test(rawText);
@@ -204,7 +210,9 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
     const isMatchMiniGameBombDefusalWithoutLockTypeLog = miniGameBombDefusalWithoutLockTypeLogRegExp.test(rawText);
     const isMatchMiniGameBombDefusalWithLockTypeLog = miniGameBombDefusalWithLockTypeLogRegExp.test(rawText);
     const isMatchMiniGameBankATMLogRegExp = miniGameBankATMLogRegExp.test(rawText);
-    if (!(isMatchNormalMineLog || isMatchTriggeredMineLog || isMatchTriggeredWithoutOwnerMineLog || isMatchOvertakeStartedLog || isMatchOvertakeCanceledLog || isMatchOvertakeAbandonedLog || isMatchOvertakeOvertakenLog || isMatchMiniGameLockpickLog || isMatchMiniGameBombDefusalWithoutLockTypeLog || isMatchMiniGameBombDefusalWithLockTypeLog || isMatchMiniGameBankATMLogRegExp)) {
+    const isMatchBuryChestLogRegExp = buryChestLogRegExp.test(rawText);
+    const isMatchUnburyChestLogRegExp = unburyChestLogRegExp.test(rawText);
+    if (!(isMatchNormalMineLog || isMatchTriggeredMineLog || isMatchTriggeredWithoutOwnerMineLog || isMatchOvertakeStartedLog || isMatchCreatedFlagLog || isMatchDestroyedFlagLog || isMatchOvertakeCanceledLog || isMatchOvertakeAbandonedLog || isMatchOvertakeOvertakenLog || isMatchMiniGameLockpickLog || isMatchMiniGameBombDefusalWithoutLockTypeLog || isMatchMiniGameBombDefusalWithLockTypeLog || isMatchMiniGameBankATMLogRegExp || isMatchBuryChestLogRegExp || isMatchUnburyChestLogRegExp)) {
         console.log("[UNKNOWN] ", rawText);
     }
     if (isMatchNormalMineLog) {
@@ -256,6 +264,46 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
             type: 'trap', createdLocations, createdArea, createdTimeStamp, targetName,
             otherConfig: {
                 action: action.toLowerCase()
+            }
+        };
+    }
+    else if (isMatchCreatedFlagLog) {
+        const [originalText, YYYY, MM, DD, HH, mm, ss, flagId, ownerUserOriginalText, ownerSteamId, ownerSessionId, ownerScumId, flagX, flagY, flagZ] = createdFlagLogRegExp.exec(rawText);
+        const createdTimeStamp = (moment(`${YYYY}.${MM}.${DD}-${HH}.${mm}.${ss}`, 'YYYY.MM.DD-HH.mm.ss').valueOf() + 1000 * 60 * 60 * 8) + '';
+        let flagLocations = undefined;
+        let flagArea = undefined;
+        if (flagX !== undefined && flagY !== undefined && flagZ !== undefined) {
+            flagLocations = `${flagX},${flagY},${flagZ}`;
+            flagArea = (0, configs_1.getAreaByLocationsArray)(GameAreaRanges, flagX, flagY);
+        }
+        const isSpecialOwner = isSpecialUserInfo(ownerUserOriginalText);
+        return {
+            scumId: isSpecialOwner === false ? ownerScumId : isSpecialOwner, steamId: isSpecialOwner === false ? ownerSteamId : '', sessionId: isSpecialOwner === false ? ownerSessionId : '',
+            type: 'flag', createdLocations: flagLocations, createdArea: flagArea, createdTimeStamp, targetName: 'flag',
+            otherConfig: {
+                action: 'createdFlag',
+                owner: { scumId: isSpecialOwner === false ? ownerScumId : isSpecialOwner, steamId: isSpecialOwner === false ? ownerSteamId : '', sessionId: isSpecialOwner === false ? ownerSessionId : '' },
+                flag: { id: flagId, locations: flagLocations, area: flagArea }
+            }
+        };
+    }
+    else if (isMatchDestroyedFlagLog) {
+        const [originalText, YYYY, MM, DD, HH, mm, ss, flagId, ownerUserOriginalText, ownerSteamId, ownerSessionId, ownerScumId, flagX, flagY, flagZ] = destroyedFlagLogRegExp.exec(rawText);
+        const createdTimeStamp = (moment(`${YYYY}.${MM}.${DD}-${HH}.${mm}.${ss}`, 'YYYY.MM.DD-HH.mm.ss').valueOf() + 1000 * 60 * 60 * 8) + '';
+        let flagLocations = undefined;
+        let flagArea = undefined;
+        if (flagX !== undefined && flagY !== undefined && flagZ !== undefined) {
+            flagLocations = `${flagX},${flagY},${flagZ}`;
+            flagArea = (0, configs_1.getAreaByLocationsArray)(GameAreaRanges, flagX, flagY);
+        }
+        const isSpecialOwner = isSpecialUserInfo(ownerUserOriginalText);
+        return {
+            scumId: isSpecialOwner === false ? ownerScumId : isSpecialOwner, steamId: isSpecialOwner === false ? ownerSteamId : '', sessionId: isSpecialOwner === false ? ownerSessionId : '',
+            type: 'flag', createdLocations: flagLocations, createdArea: flagArea, createdTimeStamp, targetName: 'flag',
+            otherConfig: {
+                action: 'destroyedFlag',
+                owner: { scumId: isSpecialOwner === false ? ownerScumId : isSpecialOwner, steamId: isSpecialOwner === false ? ownerSteamId : '', sessionId: isSpecialOwner === false ? ownerSessionId : '' },
+                flag: { id: flagId, locations: flagLocations, area: flagArea }
             }
         };
     }
@@ -421,6 +469,48 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
             }
         };
     }
+    else if (isMatchBuryChestLogRegExp) {
+        const [originalText, YYYY, MM, DD, HH, mm, ss, chestId, ownerUserOriginalText, ownerSteamId, ownerSessionId, ownerScumId, chestX, chestY, chestZ, userOriginalText, steamId, sessionId, scumId] = buryChestLogRegExp.exec(rawText);
+        const createdTimeStamp = (moment(`${YYYY}.${MM}.${DD}-${HH}.${mm}.${ss}`, 'YYYY.MM.DD-HH.mm.ss').valueOf() + 1000 * 60 * 60 * 8) + '';
+        let chestLocations = undefined;
+        let chestArea = undefined;
+        if (chestX !== undefined && chestY !== undefined && chestZ !== undefined) {
+            chestLocations = `${chestX},${chestY},${chestZ}`;
+            chestArea = (0, configs_1.getAreaByLocationsArray)(GameAreaRanges, chestX, chestY);
+        }
+        const isSpecialUser = isSpecialUserInfo(userOriginalText);
+        const isSpecialOwner = isSpecialUserInfo(ownerUserOriginalText);
+        return {
+            scumId: isSpecialUser === false ? scumId : isSpecialUser, steamId: isSpecialUser === false ? steamId : '', sessionId: isSpecialUser === false ? sessionId : '',
+            type: 'chest', createdLocations: chestLocations, createdArea: chestArea, createdTimeStamp, targetName: 'chest',
+            otherConfig: {
+                action: 'bury',
+                owner: { scumId: isSpecialOwner === false ? ownerScumId : isSpecialOwner, steamId: isSpecialOwner === false ? ownerSteamId : '', sessionId: isSpecialOwner === false ? ownerSessionId : '' },
+                chest: { id: chestId, locations: chestLocations, area: chestArea }
+            }
+        };
+    }
+    else if (isMatchUnburyChestLogRegExp) {
+        const [originalText, YYYY, MM, DD, HH, mm, ss, chestId, ownerUserOriginalText, ownerSteamId, ownerSessionId, ownerScumId, chestX, chestY, chestZ, userOriginalText, steamId, sessionId, scumId] = unburyChestLogRegExp.exec(rawText);
+        const createdTimeStamp = (moment(`${YYYY}.${MM}.${DD}-${HH}.${mm}.${ss}`, 'YYYY.MM.DD-HH.mm.ss').valueOf() + 1000 * 60 * 60 * 8) + '';
+        let chestLocations = undefined;
+        let chestArea = undefined;
+        if (chestX !== undefined && chestY !== undefined && chestZ !== undefined) {
+            chestLocations = `${chestX},${chestY},${chestZ}`;
+            chestArea = (0, configs_1.getAreaByLocationsArray)(GameAreaRanges, chestX, chestY);
+        }
+        const isSpecialUser = isSpecialUserInfo(userOriginalText);
+        const isSpecialOwner = isSpecialUserInfo(ownerUserOriginalText);
+        return {
+            scumId: isSpecialUser === false ? scumId : isSpecialUser, steamId: isSpecialUser === false ? steamId : '', sessionId: isSpecialUser === false ? sessionId : '',
+            type: 'chest', createdLocations: chestLocations, createdArea: chestArea, createdTimeStamp, targetName: 'chest',
+            otherConfig: {
+                action: 'unbury',
+                owner: { scumId: isSpecialOwner === false ? ownerScumId : isSpecialOwner, steamId: isSpecialOwner === false ? ownerSteamId : '', sessionId: isSpecialOwner === false ? ownerSessionId : '' },
+                chest: { id: chestId, locations: chestLocations, area: chestArea }
+            }
+        };
+    }
     else {
         return undefined;
     }
@@ -568,6 +658,7 @@ const tranferViolationsRecordLog = (rawText, GameAreaRanges) => {
     }
 };
 exports.tranferViolationsRecordLog = tranferViolationsRecordLog;
+const changeNameRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): Player (([\s|\S]*) \((\d*), (\d{17})\)|N\/A) changed their name to ([\s|\S]*)\./;
 const npcPurchaseDetailRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \[Trade\] Tradeable \(([\s|\S]*) \(x([\d|\-|\.]*)\)\) purchased by ([\s|\S]*)\((\d{17})\) for ([\d|\-|\.]*) money from trader ([\s|\S]*), old amount in store was ([\d|\-|\.]*), new amount is ([\d|\-|\.]*), and effective users online: ([\d|\-|\.]*)/;
 const npcBeforePurchaseRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \[Trade\] Before purchasing tradeales from trader ([\s|\S]*), player ([\s|\S]*)\((\d{17})\) had ([\d|\-|\.]*) cash, ([\d|\-|\.]*) account balance and ([\d|\-|\.]*) gold and trader had ([\d|\-|\.]*) funds\./;
 const npcAfterPurchaseRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \[Trade\] After tradeable purchase from trader ([\s|\S]*), player ([\s|\S]*)\((\d{17})\) has ([\d|\-|\.]*) cash, ([\d|\-|\.]*) bank account balance and ([\d|\-|\.]*) gold and trader has ([\d|\-|\.]*) funds\./;
@@ -588,6 +679,7 @@ const tranferRawEconomyRecordsToBlocks = (rawLog) => {
     const blocks = [];
     for (let from = 0, to = 0; to < rawLogSplitArray.length; to++) {
         if (from === to) {
+            const isMatchChangeName = changeNameRegExp.test(rawLogSplitArray[to]);
             const isMatchBankPurchase = bankPurchaseRegExp.test(rawLogSplitArray[to]);
             const isMatchBankPurchase1 = bankPurchaseRegExp1.test(rawLogSplitArray[to]);
             const isMatchBankCancel = bankCancelRegExp.test(rawLogSplitArray[to]);
@@ -599,7 +691,7 @@ const tranferRawEconomyRecordsToBlocks = (rawLog) => {
             const isMatchNpcAfterPurchase = npcAfterPurchaseRegExp.test(rawLogSplitArray[to]);
             const isMatchNpcBeforeSell = npcBeforeSellRegExp.test(rawLogSplitArray[to]);
             const isMatchNpcAfterSell = npcAfterSellRegExp.test(rawLogSplitArray[to]);
-            if ((isMatchBankPurchase || isMatchBankPurchase1 || isMatchBankCancel || isMatchBankDeposite || isMatchBankWithdraw || isMatchBankDestroy || isMatchBankTransfer) &&
+            if ((isMatchChangeName || isMatchBankPurchase || isMatchBankPurchase1 || isMatchBankCancel || isMatchBankDeposite || isMatchBankWithdraw || isMatchBankDestroy || isMatchBankTransfer) &&
                 !(isMatchNpcBeforePurchase || isMatchNpcAfterPurchase || isMatchNpcBeforeSell || isMatchNpcAfterSell)) {
                 blocks.push([rawLogSplitArray[to]]);
                 from++;
@@ -618,6 +710,7 @@ const tranferRawEconomyRecordsToBlocks = (rawLog) => {
 exports.tranferRawEconomyRecordsToBlocks = tranferRawEconomyRecordsToBlocks;
 const tranferEconomyRecords = (block, GameAreaRanges) => {
     if (block.length === 1) {
+        const isMatchChangeName = changeNameRegExp.test(block[0]);
         const isMatchBankPurchase = bankPurchaseRegExp.test(block[0]);
         const isMatchBankPurchase1 = bankPurchaseRegExp1.test(block[0]);
         const isMatchBankCancel = bankCancelRegExp.test(block[0]);
@@ -625,7 +718,17 @@ const tranferEconomyRecords = (block, GameAreaRanges) => {
         const isMatchBankWithdraw = bankWithdrawRegExp.test(block[0]);
         const isMatchBankDestroy = bankDestroyRegExp.test(block[0]);
         const isMatchBankTransfer = bankTransferRegExp.test(block[0]);
-        if (isMatchBankPurchase) {
+        if (isMatchChangeName) {
+            const [original, YYYY, MM, DD, HH, mm, ss, userOriginalText, oldScumId, sessionId, steamId, newScumId] = changeNameRegExp.exec(block[0]);
+            const createdTimeStamp = (moment(`${YYYY}-${MM}-${DD} ${HH}:${mm}:${ss}`).valueOf() + 1000 * 60 * 60 * 8) + '';
+            return {
+                scumId: oldScumId, sessionId, steamId, type: 'changeName', createdTimeStamp,
+                otherConfig: {
+                    newScumId,
+                }
+            };
+        }
+        else if (isMatchBankPurchase) {
             const [original, YYYY, MM, DD, HH, mm, ss, scumId, steamId, accountId, cardType, newCredit, X, Y, Z] = bankPurchaseRegExp.exec(block[0]);
             const createdTimeStamp = (moment(`${YYYY}-${MM}-${DD} ${HH}:${mm}:${ss}`).valueOf() + 1000 * 60 * 60 * 8) + '';
             let locations = undefined;
@@ -782,12 +885,14 @@ const tranferEconomyRecords = (block, GameAreaRanges) => {
             const [aOriginal, aYYYY, aMM, aDD, aHH, aMm, aSs, aTrader, aScumId, aSteamId, afterCash, afterBankAccountBalance, afterGold, afterTraderFunds] = npcAfterPurchaseRegExp.exec(block[block.length - 1]);
             const createdTimeStamp = (moment(`${bYYYY}-${bMM}-${bDD} ${bHH}:${bMm}:${bSs}`).valueOf() + 1000 * 60 * 60 * 8) + '';
             let effectiveUsersOnline = '0', details = [];
+            let detailsTotal = 0;
             for (let i = 0; i < block.length - 2; i++) {
                 const isMatchNpcPurchaseDetail = npcPurchaseDetailRegExp.test(block[i]);
                 if (isMatchNpcPurchaseDetail) {
                     const [pOriginal, pYYYY, pMM, pDD, pHH, pMm, pSs, detailsItem, detailsCount, pScumId, pSteamId, detailsPrice, pTrader, detailsOldAmount, detailsNewAmount, pEffectiveUsersOnline] = npcPurchaseDetailRegExp.exec(block[i]);
                     effectiveUsersOnline = pEffectiveUsersOnline;
                     details.push({ item: detailsItem, count: detailsCount, price: detailsPrice, oldAmount: detailsOldAmount, newAmount: detailsNewAmount });
+                    detailsTotal += Number(detailsPrice);
                 }
             }
             return {
@@ -800,6 +905,7 @@ const tranferEconomyRecords = (block, GameAreaRanges) => {
                     after: {
                         cash: afterCash, bankAccountBalance: afterBankAccountBalance, gold: afterGold, traderFunds: afterTraderFunds
                     },
+                    detailsTotal,
                     details
                 }
             };
@@ -809,12 +915,14 @@ const tranferEconomyRecords = (block, GameAreaRanges) => {
             const [aOriginal, aYYYY, aMM, aDD, aHH, aMm, aSs, aTrader, aScumId, aSteamId, afterCash, afterBankAccountBalance, afterGold, afterTraderFunds] = npcAfterSellRegExp.exec(block[block.length - 1]);
             const createdTimeStamp = (moment(`${bYYYY}-${bMM}-${bDD} ${bHH}:${bMm}:${bSs}`).valueOf() + 1000 * 60 * 60 * 8) + '';
             let effectiveUsersOnline = '0', details = [];
+            let detailsTotal = 0;
             for (let i = 0; i < block.length - 2; i++) {
                 const isMatchNpcSellDetail = npcSellDetailRegExp.test(block[i]);
                 if (isMatchNpcSellDetail) {
                     const [sOriginal, sYYYY, sMM, sDD, sHH, sMm, sSs, detailsItem, detailsCount, sScumId, sSteamId, detailsTotalPrice, detailsItemPrice, detailsOriginalPrice, sTrader, detailsOldAmount, detailsNewAmount, sEffectiveUsersOnline] = npcSellDetailRegExp.exec(block[i]);
                     effectiveUsersOnline = sEffectiveUsersOnline;
                     details.push({ item: detailsItem, count: detailsCount, totalPrice: detailsTotalPrice, itemPrice: detailsItemPrice, originalPrice: detailsOriginalPrice, oldAmount: detailsOldAmount, newAmount: detailsNewAmount });
+                    detailsTotal += Number(detailsTotalPrice);
                 }
             }
             return {
@@ -827,6 +935,7 @@ const tranferEconomyRecords = (block, GameAreaRanges) => {
                     after: {
                         cash: afterCash, bankAccountBalance: afterBankAccountBalance, gold: afterGold, traderFunds: afterTraderFunds
                     },
+                    detailsTotal,
                     details
                 }
             };

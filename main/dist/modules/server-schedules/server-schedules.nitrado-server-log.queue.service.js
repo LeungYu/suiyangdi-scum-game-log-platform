@@ -119,7 +119,7 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
                 };
             }
             else {
-                if (ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance === undefined) {
+                if (ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance === undefined || ServerSchedulesNitradoServerLogQueueService_1.updateFlag === true) {
                     (0, morgan_log_1.logNitradoProccessLog)(true, '--------------------interlize--------------------');
                     yield this.initializeGetServerLogsSchedule();
                     const res = yield this.getServerLogsSchedule();
@@ -138,6 +138,7 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
             ServerId = JSON.parse(ServerId.value).value;
             let NitradoAuthorizationToken = yield this.serverConfigService.getServerConfig({ name: 'NitradoAuthorizationToken' });
             NitradoAuthorizationToken = JSON.parse(NitradoAuthorizationToken.value).value;
+            ServerSchedulesNitradoServerLogQueueService_1.updateFlag = false;
             ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance = new nitrado_logs_1.default(ServerId, NitradoAuthorizationToken, 'server-log');
         });
     }
@@ -949,36 +950,45 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
     proccessServerStatus() {
         return new Promise((resolveAll, rejectServerStatus) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const resGetServerStatus = yield ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance.getServerStatus();
-                if (resGetServerStatus && resGetServerStatus.IP && resGetServerStatus.OnlinePlayers) {
-                    const updateServerIP = yield this.serverConfigService.updateServerConfig({
-                        name: 'ServerIP',
-                        value: JSON.stringify({ value: resGetServerStatus.IP })
-                    });
-                    const updateOnlinePlayers = yield this.serverConfigService.updateServerConfig({
-                        name: 'ServerOnlinePlayers',
-                        value: JSON.stringify({ value: resGetServerStatus.OnlinePlayers })
-                    });
-                    updateServerIP && updateOnlinePlayers && resolveAll(resGetServerStatus);
+                let BattleMetricServerId = yield this.serverConfigService.getServerConfig({ name: 'BattleMetricServerId' });
+                BattleMetricServerId = JSON.parse(BattleMetricServerId.value).value;
+                if (BattleMetricServerId === null || BattleMetricServerId === void 0 ? void 0 : BattleMetricServerId.length) {
+                    (0, morgan_log_1.logServerStatus)(true, 'fetch server status');
+                    const resGetServerStatus = yield ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance.getServerStatus(BattleMetricServerId);
+                    if (resGetServerStatus && resGetServerStatus.ip && resGetServerStatus.port && resGetServerStatus.players) {
+                        (0, morgan_log_1.logServerStatus)(true, '[success] fetch server status');
+                        const updateServerIP = yield this.serverConfigService.updateServerConfig({
+                            name: 'ServerIP',
+                            value: JSON.stringify({ value: `${resGetServerStatus.ip}:${resGetServerStatus.port}` })
+                        });
+                        const updateOnlinePlayers = yield this.serverConfigService.updateServerConfig({
+                            name: 'ServerOnlinePlayers',
+                            value: JSON.stringify({ value: resGetServerStatus.players })
+                        });
+                        const updateBattleMetricServerDetail = yield this.serverConfigService.updateServerConfig({
+                            name: 'BattleMetricServerDetail',
+                            value: JSON.stringify({ value: resGetServerStatus })
+                        });
+                        (0, morgan_log_1.logServerStatus)(true, '[success] update db');
+                        updateServerIP && updateOnlinePlayers && resolveAll(resGetServerStatus);
+                    }
+                    else {
+                        (0, morgan_log_1.logServerStatus)(true, `[warning] format error`);
+                        rejectServerStatus(resGetServerStatus);
+                    }
                 }
                 else {
-                    const failureRes = { IP: null, OnlinePlayers: null };
-                    if (resGetServerStatus && resGetServerStatus.IP) {
-                        failureRes.IP = resGetServerStatus.IP;
-                    }
-                    if (resGetServerStatus && resGetServerStatus.OnlinePlayers) {
-                        failureRes.OnlinePlayers = resGetServerStatus.OnlinePlayers;
-                    }
-                    rejectServerStatus(resGetServerStatus);
+                    (0, morgan_log_1.logServerStatus)(true, '[error] battlemetrics id required');
                 }
             }
             catch (e) {
-                (0, morgan_log_1.logServerStatus)(true, e.toString());
+                (0, morgan_log_1.logServerStatus)(true, '[error] fetch server status', e.toString());
                 rejectServerStatus(false);
             }
         }));
     }
 };
+ServerSchedulesNitradoServerLogQueueService.updateFlag = false;
 ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLogQueueService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [server_config_service_1.ServerConfigService,

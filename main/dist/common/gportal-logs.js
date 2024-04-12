@@ -848,19 +848,29 @@ class GPortalLogs {
             }));
         });
     }
-    getServerStatus() {
+    getServerStatus(battleMetricServerId) {
         return new Promise((resolve, rejectRequestStatus) => __awaiter(this, void 0, void 0, function* () {
-            (0, morgan_log_1.logServerStatus)(true, `[process]fetch server status`);
+            var _a, _b, _c, _d;
+            (0, morgan_log_1.logServerStatus)(true, `[proccess]fetch server status`);
             try {
-                const headers = this.generateNormalHeaders();
-                const DEFINED_GPORTAL_SERVER_INFO_API = config_1.Config.getConf('DEFINED_GPORTAL_SERVER_INFO_API');
-                const resGenerateNormalRequest = yield this.generateNormalRequest('GET', DEFINED_GPORTAL_SERVER_INFO_API ? (DEFINED_GPORTAL_SERVER_INFO_API + this.serverId) : `https://api.g-portal.us/gameserver/query/${this.serverId}`, headers, undefined, undefined, morgan_log_1.logServerStatus, { responseType: 'arraybuffer', 'decompress': true }, true);
-                (0, morgan_log_1.logServerStatus)(true, `[process]callback JSON IP: ${resGenerateNormalRequest.ipAddress} currentPlayers: ${resGenerateNormalRequest.currentPlayers} maxPlayers: ${resGenerateNormalRequest.maxPlayers}`);
-                if (resGenerateNormalRequest && resGenerateNormalRequest.ipAddress !== undefined && resGenerateNormalRequest.port !== undefined && resGenerateNormalRequest.currentPlayers !== undefined && resGenerateNormalRequest.maxPlayers !== undefined) {
-                    resolve({ IP: `${resGenerateNormalRequest.ipAddress}:${resGenerateNormalRequest.port}`, OnlinePlayers: `${resGenerateNormalRequest.currentPlayers}/${resGenerateNormalRequest.maxPlayers}` });
+                const resGenerateNormalRequest = yield this.generateNormalRequest('GET', `https://www.battlemetrics.com/servers/scum/${battleMetricServerId}`, {}, undefined, undefined, morgan_log_1.logServerStatus, {}, false);
+                const regex = /<script id="storeBootstrap" type="application\/json">(.*?)<\/script>/s;
+                const match = regex.exec(resGenerateNormalRequest);
+                if (match) {
+                    const jsonData = JSON.parse(match[1]);
+                    const serverInfo = ((_b = (_a = jsonData === null || jsonData === void 0 ? void 0 : jsonData.state) === null || _a === void 0 ? void 0 : _a.servers) === null || _b === void 0 ? void 0 : _b.servers) ? (_d = (_c = jsonData === null || jsonData === void 0 ? void 0 : jsonData.state) === null || _c === void 0 ? void 0 : _c.servers) === null || _d === void 0 ? void 0 : _d.servers[battleMetricServerId + ''] : undefined;
+                    if ((serverInfo === null || serverInfo === void 0 ? void 0 : serverInfo.id) === battleMetricServerId + '') {
+                        resolve(serverInfo);
+                        (0, morgan_log_1.logServerStatus)(true, `[proccess]battlemetric json: ${JSON.stringify(serverInfo)}`);
+                    }
+                    else {
+                        const errorDesc = '[error]battlemetric json error';
+                        (0, morgan_log_1.logServerStatus)(true, errorDesc);
+                        rejectRequestStatus({ status: false, message: errorDesc });
+                    }
                 }
                 else {
-                    const errorDesc = '[error]fetch server status' + (typeof resGenerateNormalRequest === 'object' ? JSON.stringify(resGenerateNormalRequest) : resGenerateNormalRequest);
+                    const errorDesc = '[error]battlemetric web error';
                     (0, morgan_log_1.logServerStatus)(true, errorDesc);
                     rejectRequestStatus({ status: false, message: errorDesc });
                 }

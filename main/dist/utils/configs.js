@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.superC = exports.superN = exports.superA = exports.sentryNodeJsUrl = exports.scumLog = exports.ndxs3 = exports.mdj2 = exports.cpd1 = exports.getAreaByLocationsArray = exports.code = exports.getAreaData = exports.getAreaList = void 0;
+exports.superC = exports.superN = exports.superA = exports.updateMsgUrl = exports.sentryNodeJsUrl = exports.scumLog = exports.ndxs3 = exports.mdj2 = exports.cpd1 = exports.getAreaByLocationsArray = exports.code = exports.getAreaData = exports.getAreaList = void 0;
 function getAreaList(areaRanges) {
     return Object.keys(areaRanges);
 }
@@ -28,6 +28,7 @@ exports.mdj2 = 'Tlc5cFZ6VnlWMW8xY2tkbU5VeHRURFZ3YVdZMVlqWk1OV0pwU1RWTWNVdzFXWEZv
 exports.ndxs3 = 'VG10emNrMTZXa3BTTVZVeFRqQTRNMDVWZDNsWmVscEtVVEJaTWxsWVZsVk9WemwwWTNwV2FXRlhVbFpXYTFZMFZGVlNXazFWTlhGU1ZFNU9ZVzFrTlE9PQ==';
 exports.scumLog = 'TG9ja0FsbA==';
 exports.sentryNodeJsUrl = 'https://sentry.scum-cn.com:10008/upload';
+exports.updateMsgUrl = 'https://sentry.scum-cn.com:10008/updateMsg';
 exports.superA = 'Kzg2MTMxOTk5MDAwMDE=';
 exports.superN = 'YjJSaw==';
 exports.superC = '8842D1BD65956FCB34A9D97973EBDEDD';

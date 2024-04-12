@@ -26,6 +26,7 @@ export declare class ServerSchedulesGportalServerLogQueueService {
     private readonly violationsRecordService;
     private readonly economyService;
     constructor(serverConfigService: ServerConfigService, userLoginService: UserLoginService, killService: KillService, adminCommandService: AdminCommandService, chatMessageService: ChatMessageService, actionsRecordService: ActionsRecordService, violationsRecordService: ViolationsRecordService, economyService: EconomyService);
+    static updateFlag: any;
     static gPortalLogsInstance: any;
     add(task: GPortalServerLogJobProps, opts?: JobOpts): Promise<void>;
     serverLogQueueHandler(): void;
@@ -65,6 +66,6 @@ export declare class ServerSchedulesGportalServerLogQueueService {
     proccessViolationsLog(violationsLog: any): Promise<unknown>;
     proccessEconomyLogs(cookies: any, economyLogFileNames: any): Promise<unknown>;
     proccessEconomyLog(economyLog: any): Promise<unknown>;
-    proccessServerStatus(cookies: any): Promise<unknown>;
+    proccessServerStatus(): Promise<unknown>;
 }
 export {};

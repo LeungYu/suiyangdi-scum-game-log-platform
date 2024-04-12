@@ -18,7 +18,10 @@ export declare class ServerConfigAdminSysController {
     private readonly violationsRecordService;
     private readonly economyService;
     constructor(serverConfigService: ServerConfigService, userLoginService: UserLoginService, killService: KillService, adminCommandService: AdminCommandService, chatMessageService: ChatMessageService, actionsRecordService: ActionsRecordService, violationsRecordService: ViolationsRecordService, economyService: EconomyService);
+    generateNormalRequest(method: string, url: string, headers?: any, params?: any, data?: any, logger?: any, otherConfigs?: any, toJson?: boolean): Promise<unknown>;
     serverStatus(res: Response): Promise<Response<any, Record<string, any>>>;
+    rankHistory(res: Response): Promise<Response<any, Record<string, any>>>;
+    playerCountHistory(res: Response): Promise<Response<any, Record<string, any>>>;
     gameAreaList(res: Response): Promise<Response<any, Record<string, any>>>;
     gameAreaData(res: Response): Promise<Response<any, Record<string, any>>>;
     gportalSettings(res: Response): Promise<Response<any, Record<string, any>>>;
@@ -26,4 +29,5 @@ export declare class ServerConfigAdminSysController {
     updateGportalSettings(body: UpdateGportalSettingsSysDto, res: Response): Promise<Response<any, Record<string, any>>>;
     scumMapConfigs(res: Response): Promise<Response<any, Record<string, any>>>;
     updateScumLog(body: UpdateScumLogSysDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    refreshFTPConfigs(res: Response): Promise<Response<any, Record<string, any>>>;
 }

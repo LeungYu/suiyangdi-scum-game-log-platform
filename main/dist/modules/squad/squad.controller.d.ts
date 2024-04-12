@@ -1,0 +1,33 @@
+import { Response } from 'express';
+import { SquadInfoDto, DisbandSquadDto, ExitSquadDto, UpdateSquadNameDto, ListSquadUserDto, KickSquadUserDto, TransferSquadCaptainDto, ListSquadJoinRequestDto, ProcessSquadJoinRequestDto, CreateSquadDto, SubmitJoinSquadDto, AddOrDeleteSquadViceCaptainDto } from '../../dto/squad';
+import { SessionUser } from '../../dto/session-user';
+import { Page } from "../../dto/page";
+import { UserService } from "../user/user.service";
+import { SquadService } from "./squad.service";
+import { SquadUserService } from "./squad-user.service";
+import { SquadHistoryService } from "./squad-history.service";
+import { SquadJoinRequestService } from "./squad-join-request.service";
+import { ServerConfigService } from "../server-config/server-config.service";
+export declare class SquadController {
+    private readonly userService;
+    private readonly squadService;
+    private readonly squadUserService;
+    private readonly squadHistoryService;
+    private readonly squadJoinRequestService;
+    private readonly serverConfigService;
+    constructor(userService: UserService, squadService: SquadService, squadUserService: SquadUserService, squadHistoryService: SquadHistoryService, squadJoinRequestService: SquadJoinRequestService, serverConfigService: ServerConfigService);
+    list(page: Page, res: Response): Promise<Response<any, Record<string, any>>>;
+    info(userInfo: SessionUser, query: SquadInfoDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    createSquad(userInfo: SessionUser, body: CreateSquadDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    submitJoinSquad(userInfo: SessionUser, body: SubmitJoinSquadDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    locateSquadByUser(userInfo: SessionUser, res: Response): Promise<Response<any, Record<string, any>>>;
+    updateSquadName(userInfo: SessionUser, body: UpdateSquadNameDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    disbandSquad(userInfo: SessionUser, query: DisbandSquadDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    exitSquad(userInfo: SessionUser, query: ExitSquadDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    listSquadUser(page: Page, userInfo: SessionUser, query: ListSquadUserDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    kickSquadUser(userInfo: SessionUser, body: KickSquadUserDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    transferSquadCaptain(userInfo: SessionUser, body: TransferSquadCaptainDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    addOrDeleteSquadViceCaptain(userInfo: SessionUser, body: AddOrDeleteSquadViceCaptainDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    listSquadJoinRequest(userInfo: SessionUser, page: Page, query: ListSquadJoinRequestDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    processSquadJoinRequest(userInfo: SessionUser, body: ProcessSquadJoinRequestDto, res: Response): Promise<Response<any, Record<string, any>>>;
+}

@@ -29,6 +29,8 @@ const busgb = require('buffer').Buffer;
 const NO_AUTH_PATH = [
     '/authAdminSys/checkValid',
     '/authAdminSys/login',
+    '/sys/updateMsg',
+    '/serverConfigAdminSys/serverStatus',
 ];
 let AuthCheckMiddleware = class AuthCheckMiddleware {
     constructor(serverConfigService) {

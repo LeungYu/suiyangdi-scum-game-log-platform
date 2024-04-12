@@ -2,6 +2,7 @@ declare class NitradoLogs {
     constructor(serverId: string, nitradoAuthorizationToken: string, useType?: string);
     serverId: string;
     nitradoAuthorizationToken: string;
+    generateNormalRequestUniversal(method: string, url: string, headers?: any, params?: any, data?: any, logger?: any, otherConfigs?: any, toJson?: boolean): Promise<unknown>;
     generateNormalRequest(method: string, url: string, headers?: any, params?: any, data?: any, logger?: any): Promise<unknown>;
     generateDownloadRequest(method: string, url: string, headers?: any, params?: any, body?: any, logger?: any): Promise<unknown>;
     generateHeaders(): {
@@ -18,6 +19,6 @@ declare class NitradoLogs {
     getActionsLog(GameAreaRanges: any, fileName: string): Promise<unknown>;
     getViolationsLog(GameAreaRanges: any, fileName: string): Promise<unknown>;
     getEconomyLog(GameAreaRanges: any, fileName: string): Promise<unknown>;
-    getServerStatus(): Promise<unknown>;
+    getServerStatus(battleMetricServerId: any): Promise<unknown>;
 }
 export default NitradoLogs;

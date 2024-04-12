@@ -26,6 +26,11 @@ __decorate([
 ], UpdateAllGportalSettingsSysDto.prototype, "GameServerType", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateAllGportalSettingsSysDto.prototype, "BattleMetricServerId", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
     (0, IsGPortalConfigs_1.IsGPortalConfigs)(['ServerId']),
     (0, IsNitradoConfigs_1.IsNitradoConfigs)(['ServerId']),
     __metadata("design:type", String)

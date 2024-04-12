@@ -127,7 +127,7 @@ let ServerSchedulesGGHostServerLogQueueService = ServerSchedulesGGHostServerLogQ
                 };
             }
             else {
-                if (ServerSchedulesGGHostServerLogQueueService_1.ggHostLogsInstance === undefined) {
+                if (ServerSchedulesGGHostServerLogQueueService_1.ggHostLogsInstance === undefined || ServerSchedulesGGHostServerLogQueueService_1.updateFlag === true) {
                     (0, morgan_log_1.logGGHostProccessLog)(true, '--------------------interlize--------------------');
                     yield this.initializeGetServerLogsSchedule();
                     const res = yield this.getServerLogsSchedule();
@@ -172,6 +172,7 @@ let ServerSchedulesGGHostServerLogQueueService = ServerSchedulesGGHostServerLogQ
                 ftpAccount = GGHostFtpAccount;
                 ftpPassword = GGHostFtpPassword;
             }
+            ServerSchedulesGGHostServerLogQueueService_1.updateFlag = false;
             ServerSchedulesGGHostServerLogQueueService_1.ggHostLogsInstance = new gghost_logs_1.default(serverHost, serverPort, ftpPath, ftpType, ftpHost, ftpPort, ftpAccount, ftpPassword, 'server-log');
         });
     }
@@ -194,10 +195,11 @@ let ServerSchedulesGGHostServerLogQueueService = ServerSchedulesGGHostServerLogQ
                 const allActionsLogFileNames = resGetLogsFileNames.filter((T) => T.indexOf('gameplay') !== -1 && (0, scum_log_utils_1.isLaterThanLegalDaysAgo)(T));
                 const allViolationsLogFileNames = resGetLogsFileNames.filter((T) => T.indexOf('violations') !== -1 && (0, scum_log_utils_1.isLaterThanLegalDaysAgo)(T));
                 const allEconomyLogFileNames = resGetLogsFileNames.filter((T) => T.indexOf('economy') !== -1 && (0, scum_log_utils_1.isLaterThanLegalDaysAgo)(T));
-                const [resGetKill2LoginLogs, resGetAdmin2ChatLogs, resGetActions2ViolationsLogs] = yield Promise.all([
+                const [resGetKill2LoginLogs, resGetAdmin2ChatLogs, resGetActions2ViolationsLogs, resGetServerStatus] = yield Promise.all([
                     yield this.proccessKill2LoginLogs(allLoginLogFileNames, allKillLogFileNames),
                     yield this.proccessAdmin2ChatLogs(allAdminLogFileNames, allChatLogFileNames),
                     yield this.proccessActions2ViolationsLogs(allActionsLogFileNames, allViolationsLogFileNames, allEconomyLogFileNames),
+                    yield this.proccessServerStatus(),
                 ]);
                 (0, morgan_log_1.logServerKill2LoginLog)(true, `success: get kill/login log${new Date().toISOString()}`);
                 (0, morgan_log_1.logServerKill2LoginLog)(true, `result: get kill/login log, add ${resGetKill2LoginLogs.loginProccessedNum === undefined ? 0 : resGetKill2LoginLogs.loginProccessedNum} login logs, add ${resGetKill2LoginLogs.killProccessedNum === undefined ? 0 : resGetKill2LoginLogs.killProccessedNum}kill logs`);
@@ -981,7 +983,48 @@ let ServerSchedulesGGHostServerLogQueueService = ServerSchedulesGGHostServerLogQ
             }
         }));
     }
+    proccessServerStatus() {
+        return new Promise((resolveAll, rejectServerStatus) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                let BattleMetricServerId = yield this.serverConfigService.getServerConfig({ name: 'BattleMetricServerId' });
+                BattleMetricServerId = JSON.parse(BattleMetricServerId.value).value;
+                if (BattleMetricServerId === null || BattleMetricServerId === void 0 ? void 0 : BattleMetricServerId.length) {
+                    (0, morgan_log_1.logServerStatus)(true, 'fetch server status');
+                    const resGetServerStatus = yield ServerSchedulesGGHostServerLogQueueService_1.ggHostLogsInstance.getServerStatus(BattleMetricServerId);
+                    if (resGetServerStatus && resGetServerStatus.ip && resGetServerStatus.port && resGetServerStatus.players) {
+                        (0, morgan_log_1.logServerStatus)(true, '[success] fetch server status');
+                        const updateServerIP = yield this.serverConfigService.updateServerConfig({
+                            name: 'ServerIP',
+                            value: JSON.stringify({ value: `${resGetServerStatus.ip}:${resGetServerStatus.port}` })
+                        });
+                        const updateOnlinePlayers = yield this.serverConfigService.updateServerConfig({
+                            name: 'ServerOnlinePlayers',
+                            value: JSON.stringify({ value: resGetServerStatus.players })
+                        });
+                        const updateBattleMetricServerDetail = yield this.serverConfigService.updateServerConfig({
+                            name: 'BattleMetricServerDetail',
+                            value: JSON.stringify({ value: resGetServerStatus })
+                        });
+                        (0, morgan_log_1.logServerStatus)(true, '[success] update db');
+                        updateServerIP && updateOnlinePlayers && resolveAll(resGetServerStatus);
+                    }
+                    else {
+                        (0, morgan_log_1.logServerStatus)(true, `[warning] format error`);
+                        rejectServerStatus(resGetServerStatus);
+                    }
+                }
+                else {
+                    (0, morgan_log_1.logServerStatus)(true, '[error] battlemetrics id required');
+                }
+            }
+            catch (e) {
+                (0, morgan_log_1.logServerStatus)(true, '[error] fetch server status', e.toString());
+                rejectServerStatus(false);
+            }
+        }));
+    }
 };
+ServerSchedulesGGHostServerLogQueueService.updateFlag = false;
 ServerSchedulesGGHostServerLogQueueService = ServerSchedulesGGHostServerLogQueueService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [server_config_service_1.ServerConfigService,

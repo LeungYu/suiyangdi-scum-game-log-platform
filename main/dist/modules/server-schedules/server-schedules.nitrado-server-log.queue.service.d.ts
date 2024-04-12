@@ -26,6 +26,7 @@ export declare class ServerSchedulesNitradoServerLogQueueService {
     private readonly violationsRecordService;
     private readonly economyService;
     constructor(serverConfigService: ServerConfigService, killService: KillService, userLoginService: UserLoginService, adminCommandService: AdminCommandService, chatMessageService: ChatMessageService, actionsRecordService: ActionsRecordService, violationsRecordService: ViolationsRecordService, economyService: EconomyService);
+    static updateFlag: any;
     static nitradoLogsInstance: any;
     add(task: NitradoServerLogJobProps, opts?: JobOpts): Promise<void>;
     serverLogQueueHandler(): void;

@@ -126,7 +126,7 @@ let ServerSchedulesGportalServerLogQueueService = ServerSchedulesGportalServerLo
                 };
             }
             else {
-                if (ServerSchedulesGportalServerLogQueueService_1.gPortalLogsInstance === undefined) {
+                if (ServerSchedulesGportalServerLogQueueService_1.gPortalLogsInstance === undefined || ServerSchedulesGportalServerLogQueueService_1.updateFlag === true) {
                     (0, morgan_log_1.logGPortalProccessLog)(true, '--------------------interlize--------------------');
                     yield this.initializeGetServerLogsSchedule();
                     const res = yield this.getServerLogsSchedule();
@@ -161,6 +161,7 @@ let ServerSchedulesGportalServerLogQueueService = ServerSchedulesGportalServerLo
                 ftpAccount = GPortalFtpAccount;
                 ftpPassword = GPortalFtpPassword;
             }
+            ServerSchedulesGportalServerLogQueueService_1.updateFlag = false;
             ServerSchedulesGportalServerLogQueueService_1.gPortalLogsInstance = new gportal_logs_1.default(ServerId, ftpHost, ftpPort, ftpAccount, ftpPassword, 'server-log');
         });
     }
@@ -189,7 +190,7 @@ let ServerSchedulesGportalServerLogQueueService = ServerSchedulesGportalServerLo
                     yield this.proccessKill2LoginLogs(GPortalPreservedCookies, allLoginLogFileNames, allKillLogFileNames),
                     yield this.proccessAdmin2ChatLogs(GPortalPreservedCookies, allAdminLogFileNames, allChatLogFileNames),
                     yield this.proccessActions2ViolationsLogs(GPortalPreservedCookies, allActionsLogFileNames, allViolationsLogFileNames, allEconomyLogFileNames),
-                    yield this.proccessServerStatus(GPortalPreservedCookies),
+                    yield this.proccessServerStatus(),
                 ]);
                 (0, morgan_log_1.logServerKill2LoginLog)(true, `success: get kill/login log${new Date().toISOString()}`);
                 (0, morgan_log_1.logServerKill2LoginLog)(true, `result: get kill/login log, add ${resGetKill2LoginLogs.loginProccessedNum === undefined ? 0 : resGetKill2LoginLogs.loginProccessedNum} login logs, add ${resGetKill2LoginLogs.killProccessedNum === undefined ? 0 : resGetKill2LoginLogs.killProccessedNum}kill logs`);
@@ -977,40 +978,48 @@ let ServerSchedulesGportalServerLogQueueService = ServerSchedulesGportalServerLo
             }
         }));
     }
-    proccessServerStatus(cookies) {
+    proccessServerStatus() {
         return new Promise((resolveAll, rejectServerStatus) => __awaiter(this, void 0, void 0, function* () {
             try {
-                (0, morgan_log_1.logServerStatus)(true, '[fetch]');
-                const resGetServerStatus = yield ServerSchedulesGportalServerLogQueueService_1.gPortalLogsInstance.getServerStatus(cookies);
-                if (resGetServerStatus && resGetServerStatus.IP && resGetServerStatus.OnlinePlayers) {
-                    const updateServerIP = yield this.serverConfigService.updateServerConfig({
-                        name: 'ServerIP',
-                        value: JSON.stringify({ value: resGetServerStatus.IP })
-                    });
-                    const updateOnlinePlayers = yield this.serverConfigService.updateServerConfig({
-                        name: 'ServerOnlinePlayers',
-                        value: JSON.stringify({ value: resGetServerStatus.OnlinePlayers })
-                    });
-                    updateServerIP && updateOnlinePlayers && resolveAll(resGetServerStatus);
+                let BattleMetricServerId = yield this.serverConfigService.getServerConfig({ name: 'BattleMetricServerId' });
+                BattleMetricServerId = JSON.parse(BattleMetricServerId.value).value;
+                if (BattleMetricServerId === null || BattleMetricServerId === void 0 ? void 0 : BattleMetricServerId.length) {
+                    (0, morgan_log_1.logServerStatus)(true, 'fetch server status');
+                    const resGetServerStatus = yield ServerSchedulesGportalServerLogQueueService_1.gPortalLogsInstance.getServerStatus(BattleMetricServerId);
+                    if (resGetServerStatus && resGetServerStatus.ip && resGetServerStatus.port && resGetServerStatus.players) {
+                        (0, morgan_log_1.logServerStatus)(true, '[success] fetch server status');
+                        const updateServerIP = yield this.serverConfigService.updateServerConfig({
+                            name: 'ServerIP',
+                            value: JSON.stringify({ value: `${resGetServerStatus.ip}:${resGetServerStatus.port}` })
+                        });
+                        const updateOnlinePlayers = yield this.serverConfigService.updateServerConfig({
+                            name: 'ServerOnlinePlayers',
+                            value: JSON.stringify({ value: resGetServerStatus.players })
+                        });
+                        const updateBattleMetricServerDetail = yield this.serverConfigService.updateServerConfig({
+                            name: 'BattleMetricServerDetail',
+                            value: JSON.stringify({ value: resGetServerStatus })
+                        });
+                        (0, morgan_log_1.logServerStatus)(true, '[success] update db');
+                        updateServerIP && updateOnlinePlayers && resolveAll(resGetServerStatus);
+                    }
+                    else {
+                        (0, morgan_log_1.logServerStatus)(true, `[warning] format error`);
+                        rejectServerStatus(resGetServerStatus);
+                    }
                 }
                 else {
-                    const failureRes = { IP: null, OnlinePlayers: null };
-                    if (resGetServerStatus && resGetServerStatus.IP) {
-                        failureRes.IP = resGetServerStatus.IP;
-                    }
-                    if (resGetServerStatus && resGetServerStatus.OnlinePlayers) {
-                        failureRes.OnlinePlayers = resGetServerStatus.OnlinePlayers;
-                    }
-                    rejectServerStatus(resGetServerStatus);
+                    (0, morgan_log_1.logServerStatus)(true, '[error] battlemetrics id required');
                 }
             }
             catch (e) {
-                (0, morgan_log_1.logServerStatus)(true, e.toString());
+                (0, morgan_log_1.logServerStatus)(true, '[error] fetch server status', e.toString());
                 rejectServerStatus(false);
             }
         }));
     }
 };
+ServerSchedulesGportalServerLogQueueService.updateFlag = false;
 ServerSchedulesGportalServerLogQueueService = ServerSchedulesGportalServerLogQueueService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [server_config_service_1.ServerConfigService,

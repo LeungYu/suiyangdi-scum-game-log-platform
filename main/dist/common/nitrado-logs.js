@@ -17,6 +17,25 @@ class NitradoLogs {
         this.serverId = serverId;
         this.nitradoAuthorizationToken = nitradoAuthorizationToken;
     }
+    generateNormalRequestUniversal(method, url, headers, params, data, logger, otherConfigs, toJson) {
+        const _otherConfigs = otherConfigs ? otherConfigs : {};
+        return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+            let res;
+            try {
+                res = yield axios(Object.assign({ method,
+                    url,
+                    headers,
+                    params,
+                    data }, _otherConfigs));
+                resolve(toJson ? JSON.parse(res.data.toString('utf8')) : res.data);
+            }
+            catch (e) {
+                res = undefined;
+                logger(true, `【错误】【请求出错】method: ${method} url: ${url} error:${e.toString()}`);
+                reject(e);
+            }
+        }));
+    }
     generateNormalRequest(method, url, headers, params, data, logger) {
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
             let res;
@@ -495,39 +514,37 @@ class NitradoLogs {
             }
         }));
     }
-    getServerStatus() {
-        return new Promise((resolveMainTask, rejectMainTask) => __awaiter(this, void 0, void 0, function* () {
+    getServerStatus(battleMetricServerId) {
+        return new Promise((resolve, rejectRequestStatus) => __awaiter(this, void 0, void 0, function* () {
+            var _a, _b, _c, _d;
+            (0, morgan_log_1.logServerStatus)(true, `[proccess]fetch server status`);
             try {
-                let IP;
-                let basePath;
-                try {
-                    const resGetGameserverInfo = yield this.generateNormalRequest('GET', `https://api.nitrado.net/services/${this.serverId}/gameservers`, this.generateHeaders(), undefined, undefined, morgan_log_1.logNitradoProccessLog);
-                    IP = `${resGetGameserverInfo.data.gameserver.ip}:${resGetGameserverInfo.data.gameserver.query_port}`;
-                    basePath = resGetGameserverInfo.data.gameserver.game_specific.path;
+                const resGenerateNormalRequest = yield this.generateNormalRequestUniversal('GET', `https://www.battlemetrics.com/servers/scum/${battleMetricServerId}`, {}, undefined, undefined, morgan_log_1.logServerStatus, {}, false);
+                const regex = /<script id="storeBootstrap" type="application\/json">(.*?)<\/script>/s;
+                const match = regex.exec(resGenerateNormalRequest);
+                if (match) {
+                    const jsonData = JSON.parse(match[1]);
+                    const serverInfo = ((_b = (_a = jsonData === null || jsonData === void 0 ? void 0 : jsonData.state) === null || _a === void 0 ? void 0 : _a.servers) === null || _b === void 0 ? void 0 : _b.servers) ? (_d = (_c = jsonData === null || jsonData === void 0 ? void 0 : jsonData.state) === null || _c === void 0 ? void 0 : _c.servers) === null || _d === void 0 ? void 0 : _d.servers[battleMetricServerId + ''] : undefined;
+                    if ((serverInfo === null || serverInfo === void 0 ? void 0 : serverInfo.id) === battleMetricServerId + '') {
+                        resolve(serverInfo);
+                        (0, morgan_log_1.logServerStatus)(true, `[proccess]battlemetric json: ${JSON.stringify(serverInfo)}`);
+                    }
+                    else {
+                        const errorDesc = '[error]battlemetric json error';
+                        (0, morgan_log_1.logServerStatus)(true, errorDesc);
+                        rejectRequestStatus({ status: false, message: errorDesc });
+                    }
                 }
-                catch (e) {
-                    const errorDesc = `[error]ip, query_port, basePath: ${e.toString()}`;
-                    (0, morgan_log_1.logNitradoProccessLog)(true, errorDesc);
-                    rejectMainTask({ status: false, message: errorDesc });
-                    return;
+                else {
+                    const errorDesc = '[error]battlemetric web error';
+                    (0, morgan_log_1.logServerStatus)(true, errorDesc);
+                    rejectRequestStatus({ status: false, message: errorDesc });
                 }
-                let OnlinePlayers;
-                try {
-                    const resGetStats = yield this.generateNormalRequest('GET', `https://api.nitrado.net/services/${this.serverId}/gameservers/stats`, this.generateHeaders(), { dir: `${basePath}scum/SCUM/Saved/SaveFiles/Logs` }, undefined, morgan_log_1.logNitradoProccessLog);
-                    OnlinePlayers = `${resGetStats.data.stats.currentPlayers.length ? parseInt(resGetStats.data.stats.currentPlayers[resGetStats.data.stats.currentPlayers.length - 1][0]) : 0}/${resGetStats.data.stats.maxPlayers.length ? parseInt(resGetStats.data.stats.maxPlayers[resGetStats.data.stats.maxPlayers.length - 1][0]) : 0}`;
-                }
-                catch (e) {
-                    const errorDesc = `[error][process] ${e.toString()}`;
-                    (0, morgan_log_1.logNitradoProccessLog)(true, errorDesc);
-                    rejectMainTask({ status: false, message: errorDesc });
-                    return;
-                }
-                resolveMainTask({ IP, OnlinePlayers });
             }
             catch (e) {
-                const errorDesc = '[error]' + e.toString();
+                const errorDesc = '[error]fetch server status' + e.toString();
                 (0, morgan_log_1.logServerStatus)(true, errorDesc);
-                rejectMainTask({ status: false, message: errorDesc });
+                rejectRequestStatus({ status: false, message: errorDesc });
             }
         }));
     }

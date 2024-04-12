@@ -24,7 +24,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ServerConfigAdminSysController = void 0;
 const common_1 = require("@nestjs/common");
 const server_config_admin_sys_1 = require("../../dto/server-config-admin-sys");
-;
+const moment = require("moment");
+const morgan_log_1 = require("../../common/morgan-log");
 const response_builder_1 = require("../../common/response-builder");
 const server_config_service_1 = require("./server-config.service");
 const configs_1 = require("../../utils/configs");
@@ -38,7 +39,11 @@ const chat_message_service_1 = require("../chat-message/chat-message.service");
 const actions_record_service_1 = require("../actions-record/actions-record.service");
 const violations_record_service_1 = require("../violations-record/violations-record.service");
 const economy_service_1 = require("../economy/economy.service");
+const server_schedules_gportal_server_log_queue_service_1 = require("../server-schedules/server-schedules.gportal-server-log.queue.service");
+const server_schedules_gghost_server_log_queue_service_1 = require("../server-schedules/server-schedules.gghost-server-log.queue.service");
+const server_schedules_nitrado_server_log_queue_service_1 = require("../server-schedules/server-schedules.nitrado-server-log.queue.service");
 const vuf = require('buffer').Buffer;
+const axios = require('axios');
 let ServerConfigAdminSysController = class ServerConfigAdminSysController {
     constructor(serverConfigService, userLoginService, killService, adminCommandService, chatMessageService, actionsRecordService, violationsRecordService, economyService) {
         this.serverConfigService = serverConfigService;
@@ -50,20 +55,82 @@ let ServerConfigAdminSysController = class ServerConfigAdminSysController {
         this.violationsRecordService = violationsRecordService;
         this.economyService = economyService;
     }
+    generateNormalRequest(method, url, headers, params, data, logger, otherConfigs, toJson) {
+        const _otherConfigs = otherConfigs ? otherConfigs : {};
+        return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+            let res;
+            try {
+                res = yield axios(Object.assign({ method,
+                    url,
+                    headers,
+                    params,
+                    data }, _otherConfigs));
+                resolve(toJson ? JSON.parse(res.data.toString('utf8')) : res.data);
+            }
+            catch (e) {
+                res = undefined;
+                logger(true, `[fetch error]method: ${method} url: ${url} error:${e.toString()}`);
+                reject(e);
+            }
+        }));
+    }
     serverStatus(res) {
         return __awaiter(this, void 0, void 0, function* () {
             const resGameServerType = yield this.serverConfigService.getServerConfig({ name: 'GameServerType' });
             const resServerIP = yield this.serverConfigService.getServerConfig({ name: 'ServerIP' });
             const resServerOnlinePlayers = yield this.serverConfigService.getServerConfig({ name: 'ServerOnlinePlayers' });
-            const results = resGameServerType && resGameServerType.id && JSON.parse(resGameServerType.value).value === 'GGHOST' ?
-                {
-                    ServerIP: 'GGHost暂无法提供',
-                    OnlinePlayers: 'GGHost暂无法提供',
-                } : {
+            const resBattleMetricServerDetail = yield this.serverConfigService.getServerConfig({ name: 'BattleMetricServerDetail' });
+            const results = {
                 ServerIP: resServerIP && resServerIP.id ? JSON.parse(resServerIP.value).value : null,
-                OnlinePlayers: resServerOnlinePlayers && resServerOnlinePlayers.id ? JSON.parse(resServerOnlinePlayers.value).value : null
+                OnlinePlayers: resServerOnlinePlayers && resServerOnlinePlayers.id ? JSON.parse(resServerOnlinePlayers.value).value : null,
+                ServerDetail: resBattleMetricServerDetail && resBattleMetricServerDetail.id ? JSON.parse(resBattleMetricServerDetail.value).value : null,
             };
             return res.json((0, response_builder_1.responseBuilder)(response_builder_1.ResponseStatusCode.OK, results));
+        });
+    }
+    rankHistory(res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let BattleMetricServerId = yield this.serverConfigService.getServerConfig({ name: 'BattleMetricServerId' });
+                BattleMetricServerId = JSON.parse(BattleMetricServerId.value).value;
+                if (BattleMetricServerId === null || BattleMetricServerId === void 0 ? void 0 : BattleMetricServerId.length) {
+                    const resGenerateNormalRequest = yield this.generateNormalRequest('GET', `https://api.battlemetrics.com/servers/${BattleMetricServerId}/rank-history`, {}, {
+                        start: `${moment().subtract(1, 'month').format('YYYY-MM-DD')}T00:00:00.000Z`,
+                        stop: `${moment().format('YYYY-MM-DD')}T00:00:00.000Z`,
+                    }, undefined, morgan_log_1.logBussiness, {}, false);
+                    return res.json((0, response_builder_1.responseBuilder)(response_builder_1.ResponseStatusCode.OK, resGenerateNormalRequest));
+                }
+                else {
+                    return res.json((0, response_builder_1.responseBuilder)(response_builder_1.ResponseStatusCode.INTERNAL_ERROR, {}, 'BattleMetric ID required'));
+                }
+            }
+            catch (e) {
+                (0, morgan_log_1.logBussiness)(e);
+                return res.json((0, response_builder_1.responseBuilder)(response_builder_1.ResponseStatusCode.INTERNAL_ERROR, {}, e.toString()));
+            }
+        });
+    }
+    playerCountHistory(res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let BattleMetricServerId = yield this.serverConfigService.getServerConfig({ name: 'BattleMetricServerId' });
+                BattleMetricServerId = JSON.parse(BattleMetricServerId.value).value;
+                if (BattleMetricServerId === null || BattleMetricServerId === void 0 ? void 0 : BattleMetricServerId.length) {
+                    const resGenerateNormalRequest = yield this.generateNormalRequest('GET', `https://api.battlemetrics.com/servers/${BattleMetricServerId}/player-count-history`, {}, {
+                        start: `${moment().subtract(1, 'month').format('YYYY-MM-DD')}T00:00:00.000Z`,
+                        stop: `${moment().format('YYYY-MM-DD')}T00:00:00.000Z`,
+                        resolution: '30'
+                    }, undefined, morgan_log_1.logBussiness, {}, false);
+                    return res.json((0, response_builder_1.responseBuilder)(response_builder_1.ResponseStatusCode.OK, resGenerateNormalRequest));
+                }
+                else {
+                    return res.json((0, response_builder_1.responseBuilder)(response_builder_1.ResponseStatusCode.INTERNAL_ERROR, {}, 'BattleMetric ID required'));
+                }
+            }
+            catch (e) {
+                (0, morgan_log_1.logBussiness)(e);
+                return res.json((0, response_builder_1.responseBuilder)(response_builder_1.ResponseStatusCode.INTERNAL_ERROR, {}, e.toString()));
+            }
         });
     }
     gameAreaList(res) {
@@ -83,6 +150,7 @@ let ServerConfigAdminSysController = class ServerConfigAdminSysController {
     gportalSettings(res) {
         return __awaiter(this, void 0, void 0, function* () {
             const resGameServerType = yield this.serverConfigService.getServerConfig({ name: 'GameServerType' });
+            const resBattleMetricServerId = yield this.serverConfigService.getServerConfig({ name: 'BattleMetricServerId' });
             const resServerId = yield this.serverConfigService.getServerConfig({ name: 'ServerId' });
             const resGPortalFTPUrl = yield this.serverConfigService.getServerConfig({ name: 'GPortalFTPUrl' });
             const resGPortalFTPAccount = yield this.serverConfigService.getServerConfig({ name: 'GPortalFTPAccount' });
@@ -111,6 +179,7 @@ let ServerConfigAdminSysController = class ServerConfigAdminSysController {
             const resSteamAPIToken = yield this.serverConfigService.getServerConfig({ name: 'SteamAPIToken' });
             const results = {
                 GameServerType: resGameServerType && resGameServerType.id ? JSON.parse(resGameServerType.value).value : null,
+                BattleMetricServerId: resBattleMetricServerId && resBattleMetricServerId.id ? JSON.parse(resBattleMetricServerId.value).value : null,
                 ServerId: resServerId && resServerId.id ? JSON.parse(resServerId.value).value : null,
                 GPortalFTPUrl: resGPortalFTPUrl && resGPortalFTPUrl.id ? JSON.parse(resGPortalFTPUrl.value).value : null,
                 GPortalFTPAccount: resGPortalFTPAccount && resGPortalFTPAccount.id ? JSON.parse(resGPortalFTPAccount.value).value : null,
@@ -222,6 +291,7 @@ let ServerConfigAdminSysController = class ServerConfigAdminSysController {
             const resUpdateGGHostFTPAccount = yield this.serverConfigService.updateServerConfig({ name: 'GGHostFTPAccount', value: JSON.stringify({ value: body.GGHostFTPAccount }) });
             const resUpdateGGHostFTPPassword = yield this.serverConfigService.updateServerConfig({ name: 'GGHostFTPPassword', value: JSON.stringify({ value: body.GGHostFTPPassword }) });
             const resUpdateGGHostLogsRollbackInterval = yield this.serverConfigService.updateServerConfig({ name: 'GGHostLogsRollbackInterval', value: JSON.stringify({ value: body.GGHostLogsRollbackInterval }) });
+            const resUpdateBattleMetricServerId = yield this.serverConfigService.updateServerConfig({ name: 'BattleMetricServerId', value: JSON.stringify({ value: body.BattleMetricServerId }) });
             const resUpdateGameMapBorderInfo = yield this.serverConfigService.updateServerConfig({ name: 'GameMapBorderInfo', value: JSON.stringify({ value: body.GameMapBorderInfo }) });
             const resUpdateGameMapImageUrl = yield this.serverConfigService.updateServerConfig({ name: 'GameMapImageUrl', value: JSON.stringify({ value: body.GameMapImageUrl }) });
             const resUpdateGameAreaRanges = yield this.serverConfigService.updateServerConfig({ name: 'GameAreaRanges', value: JSON.stringify({ value: body.GameAreaRanges }) });
@@ -267,6 +337,25 @@ let ServerConfigAdminSysController = class ServerConfigAdminSysController {
             return res.json((0, response_builder_1.responseBuilder)(response_builder_1.ResponseStatusCode.OK, {}));
         });
     }
+    refreshFTPConfigs(res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const resGameServerType = yield this.serverConfigService.getServerConfig({ name: 'GameServerType' });
+            const GameServerType = resGameServerType && resGameServerType.id ? JSON.parse(resGameServerType.value).value : null;
+            if (GameServerType === 'GPORTAL') {
+                server_schedules_gportal_server_log_queue_service_1.ServerSchedulesGportalServerLogQueueService.updateFlag = true;
+            }
+            else if (GameServerType === 'GGHOST') {
+                server_schedules_gghost_server_log_queue_service_1.ServerSchedulesGGHostServerLogQueueService.updateFlag = true;
+            }
+            else if (GameServerType === 'NITRADO') {
+                server_schedules_nitrado_server_log_queue_service_1.ServerSchedulesNitradoServerLogQueueService.updateFlag = true;
+            }
+            else {
+                return res.json((0, response_builder_1.responseBuilder)(response_builder_1.ResponseStatusCode.INTERNAL_ERROR, {}, '还没选择服务器类型'));
+            }
+            return res.json((0, response_builder_1.responseBuilder)(response_builder_1.ResponseStatusCode.OK, {}));
+        });
+    }
 };
 __decorate([
     (0, common_1.Get)('/serverStatus'),
@@ -275,6 +364,20 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ServerConfigAdminSysController.prototype, "serverStatus", null);
+__decorate([
+    (0, common_1.Get)('/rankHistory'),
+    __param(0, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ServerConfigAdminSysController.prototype, "rankHistory", null);
+__decorate([
+    (0, common_1.Get)('/playerCountHistory'),
+    __param(0, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ServerConfigAdminSysController.prototype, "playerCountHistory", null);
 __decorate([
     (0, common_1.Get)('/gameAreaList'),
     __param(0, (0, common_1.Res)()),
@@ -330,6 +433,14 @@ __decorate([
     __metadata("design:paramtypes", [server_config_admin_sys_1.UpdateScumLogSysDto, Object]),
     __metadata("design:returntype", Promise)
 ], ServerConfigAdminSysController.prototype, "updateScumLog", null);
+__decorate([
+    (0, common_1.Post)('/refreshFTPConfigs'),
+    (0, common_1.UseGuards)(super_admin_sys_access_guard_1.SuperAdminSysGuard),
+    __param(0, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ServerConfigAdminSysController.prototype, "refreshFTPConfigs", null);
 ServerConfigAdminSysController = __decorate([
     (0, common_1.Controller)('/serverConfigAdminSys'),
     (0, common_1.UseGuards)(admin_sys_access_guard_1.AdminSysGuard),

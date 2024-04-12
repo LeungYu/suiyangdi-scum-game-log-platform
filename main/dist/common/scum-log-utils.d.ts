@@ -67,6 +67,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
         elapsedTime?: undefined;
         failedAttempts?: undefined;
         lockType?: undefined;
+        chest?: undefined;
     };
 } | {
     scumId: string;
@@ -89,6 +90,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
         elapsedTime?: undefined;
         failedAttempts?: undefined;
         lockType?: undefined;
+        chest?: undefined;
     };
 } | {
     scumId: string;
@@ -115,6 +117,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
         elapsedTime?: undefined;
         failedAttempts?: undefined;
         lockType?: undefined;
+        chest?: undefined;
     };
 } | {
     scumId: string;
@@ -141,6 +144,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
         elapsedTime?: undefined;
         failedAttempts?: undefined;
         lockType?: undefined;
+        chest?: undefined;
     };
 } | {
     scumId: string;
@@ -163,6 +167,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
         lockType: string;
         action?: undefined;
         flag?: undefined;
+        chest?: undefined;
     };
 } | {
     scumId: string;
@@ -185,6 +190,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
         action?: undefined;
         flag?: undefined;
         lockType?: undefined;
+        chest?: undefined;
     };
 } | {
     scumId: string;
@@ -202,8 +208,36 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
         owner?: undefined;
         flag?: undefined;
         lockType?: undefined;
+        chest?: undefined;
     };
     targetName?: undefined;
+} | {
+    scumId: string;
+    steamId: string;
+    sessionId: string;
+    type: string;
+    createdLocations: any;
+    createdArea: any;
+    createdTimeStamp: string;
+    targetName: string;
+    otherConfig: {
+        action: string;
+        owner: {
+            scumId: string;
+            steamId: string;
+            sessionId: string;
+        };
+        chest: {
+            id: string;
+            locations: any;
+            area: any;
+        };
+        flag?: undefined;
+        success?: undefined;
+        elapsedTime?: undefined;
+        failedAttempts?: undefined;
+        lockType?: undefined;
+    };
 };
 export declare const tranferViolationsRecordLog: (rawText: string, GameAreaRanges: any) => {
     tag: string;
@@ -278,17 +312,15 @@ export declare const tranferViolationsRecordLog: (rawText: string, GameAreaRange
 export declare const tranferRawEconomyRecordsToBlocks: (rawLog: string) => any[];
 export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: any) => {
     scumId: string;
+    sessionId: string;
     steamId: string;
     type: string;
     createdTimeStamp: string;
     otherConfig: {
-        locations: any;
-        area: any;
-        purchaseInfo: {
-            cardType: string;
-            accountId: string;
-            newCredit: string;
-        };
+        newScumId: string;
+        locations?: undefined;
+        area?: undefined;
+        purchaseInfo?: undefined;
         depositeInfo?: undefined;
         withdrawInfo?: undefined;
         destroyInfo?: undefined;
@@ -296,6 +328,7 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
         effectiveUsersOnline?: undefined;
         before?: undefined;
         after?: undefined;
+        detailsTotal?: undefined;
         details?: undefined;
     };
     trader?: undefined;
@@ -310,8 +343,9 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
         purchaseInfo: {
             cardType: string;
             accountId: string;
-            newCredit?: undefined;
+            newCredit: string;
         };
+        newScumId?: undefined;
         depositeInfo?: undefined;
         withdrawInfo?: undefined;
         destroyInfo?: undefined;
@@ -319,8 +353,36 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
         effectiveUsersOnline?: undefined;
         before?: undefined;
         after?: undefined;
+        detailsTotal?: undefined;
         details?: undefined;
     };
+    sessionId?: undefined;
+    trader?: undefined;
+} | {
+    scumId: string;
+    steamId: string;
+    type: string;
+    createdTimeStamp: string;
+    otherConfig: {
+        locations: any;
+        area: any;
+        purchaseInfo: {
+            cardType: string;
+            accountId: string;
+            newCredit?: undefined;
+        };
+        newScumId?: undefined;
+        depositeInfo?: undefined;
+        withdrawInfo?: undefined;
+        destroyInfo?: undefined;
+        transferInfo?: undefined;
+        effectiveUsersOnline?: undefined;
+        before?: undefined;
+        after?: undefined;
+        detailsTotal?: undefined;
+        details?: undefined;
+    };
+    sessionId?: undefined;
     trader?: undefined;
 } | {
     scumId: string;
@@ -344,6 +406,7 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
                 reality: string;
             };
         };
+        newScumId?: undefined;
         purchaseInfo?: undefined;
         withdrawInfo?: undefined;
         destroyInfo?: undefined;
@@ -351,8 +414,10 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
         effectiveUsersOnline?: undefined;
         before?: undefined;
         after?: undefined;
+        detailsTotal?: undefined;
         details?: undefined;
     };
+    sessionId?: undefined;
     trader?: undefined;
 } | {
     scumId: string;
@@ -376,6 +441,7 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
                 reality: string;
             };
         };
+        newScumId?: undefined;
         purchaseInfo?: undefined;
         depositeInfo?: undefined;
         destroyInfo?: undefined;
@@ -383,8 +449,10 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
         effectiveUsersOnline?: undefined;
         before?: undefined;
         after?: undefined;
+        detailsTotal?: undefined;
         details?: undefined;
     };
+    sessionId?: undefined;
     trader?: undefined;
 } | {
     scumId: string;
@@ -403,6 +471,7 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
                 accountId: string;
             };
         };
+        newScumId?: undefined;
         purchaseInfo?: undefined;
         depositeInfo?: undefined;
         withdrawInfo?: undefined;
@@ -410,8 +479,10 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
         effectiveUsersOnline?: undefined;
         before?: undefined;
         after?: undefined;
+        detailsTotal?: undefined;
         details?: undefined;
     };
+    sessionId?: undefined;
     trader?: undefined;
 } | {
     scumId: string;
@@ -440,6 +511,7 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
                 reality: string;
             };
         };
+        newScumId?: undefined;
         purchaseInfo?: undefined;
         depositeInfo?: undefined;
         withdrawInfo?: undefined;
@@ -447,8 +519,10 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
         effectiveUsersOnline?: undefined;
         before?: undefined;
         after?: undefined;
+        detailsTotal?: undefined;
         details?: undefined;
     };
+    sessionId?: undefined;
     trader?: undefined;
 } | {
     scumId: string;
@@ -470,7 +544,9 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
             gold: string;
             traderFunds: string;
         };
+        detailsTotal: number;
         details: any[];
+        newScumId?: undefined;
         locations?: undefined;
         area?: undefined;
         purchaseInfo?: undefined;
@@ -479,4 +555,5 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
         destroyInfo?: undefined;
         transferInfo?: undefined;
     };
+    sessionId?: undefined;
 };
