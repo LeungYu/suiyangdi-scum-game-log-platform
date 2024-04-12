@@ -11,7 +11,7 @@
  Target Server Version : 50731
  File Encoding         : 65001
 
- Date: 18/03/2024 21:57:08
+ Date: 13/04/2024 00:17:34
 */
 
 SET NAMES utf8mb4;
@@ -113,7 +113,7 @@ CREATE TABLE `server_config` (
   `name` varchar(100) COLLATE utf8mb4_bin NOT NULL,
   `cnName` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=183 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=187 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of server_config
@@ -151,6 +151,9 @@ INSERT INTO `server_config` VALUES (151, '{\"value\":{\"recentTimeStamp\":\"\",\
 INSERT INTO `server_config` VALUES (158, '{\"value\":\"\"}', 1, '1611587843813', 'GPortalPreservedCookies', 'GPortalPreservedCookies');
 INSERT INTO `server_config` VALUES (160, '{\"value\":{\"A1\":{\"xMin\":-600000,\"xMax\":-295500,\"yMin\":-600000,\"yMax\":-294000},\"A2\":{\"xMin\":-295500,\"xMax\":10000,\"yMin\":-600000,\"yMax\":-294000},\"A3\":{\"xMin\":10000,\"xMax\":314500,\"yMin\":-600000,\"yMax\":-294000},\"A4\":{\"xMin\":314500,\"xMax\":620000,\"yMin\":-600000,\"yMax\":-294000},\"B1\":{\"xMin\":-600000,\"xMax\":-295500,\"yMin\":-294000,\"yMax\":12000},\"B2\":{\"xMin\":-295500,\"xMax\":10000,\"yMin\":-294000,\"yMax\":12000},\"B3\":{\"xMin\":10000,\"xMax\":314500,\"yMin\":-294000,\"yMax\":12000},\"B4\":{\"xMin\":314500,\"xMax\":620000,\"yMin\":-294000,\"yMax\":12000},\"C1\":{\"xMin\":-600000,\"xMax\":-295500,\"yMin\":12000,\"yMax\":318000},\"C2\":{\"xMin\":-295500,\"xMax\":10000,\"yMin\":12000,\"yMax\":318000},\"C3\":{\"xMin\":10000,\"xMax\":314500,\"yMin\":12000,\"yMax\":318000},\"C4\":{\"xMin\":314500,\"xMax\":620000,\"yMin\":12000,\"yMax\":318000},\"D1\":{\"xMin\":-600000,\"xMax\":-295500,\"yMin\":318000,\"yMax\":620000},\"D2\":{\"xMin\":-295500,\"xMax\":10000,\"yMin\":318000,\"yMax\":620000},\"D3\":{\"xMin\":10000,\"xMax\":314500,\"yMin\":318000,\"yMax\":620000},\"D4\":{\"xMin\":314500,\"xMax\":620000,\"yMin\":318000,\"yMax\":620000},\"A0\":{\"xMax\":-600000,\"xMin\":-904299,\"yMax\":-294000,\"yMin\":-600000},\"B0\":{\"xMax\":-600000,\"xMin\":-904299,\"yMax\":12000,\"yMin\":-294000},\"C0\":{\"xMax\":-600000,\"xMin\":-904299,\"yMax\":318000,\"yMin\":12000},\"D0\":{\"xMax\":-600000,\"xMin\":-904299,\"yMax\":620000,\"yMin\":318000},\"Z0\":{\"xMax\":-600000,\"xMin\":-904299,\"yMax\":-600000,\"yMin\":-908000},\"Z1\":{\"xMax\":-295500,\"xMin\":-600000,\"yMax\":-600000,\"yMin\":-908000},\"Z2\":{\"xMax\":10000,\"xMin\":-295500,\"yMax\":-600000,\"yMin\":-908000},\"Z3\":{\"xMax\":314500,\"xMin\":10000,\"yMax\":-600000,\"yMin\":-908000},\"Z4\":{\"xMax\":620000,\"xMin\":314500,\"yMax\":-600000,\"yMin\":-908000}}}', 1, '1611587843813', 'GameAreaRanges', 'GameAreaRanges');
 INSERT INTO `server_config` VALUES (173, '{\"value\":false}', 1, '1611587843813', 'LockAll', 'LockAll');
+INSERT INTO `server_config` VALUES (183, '{\"value\":\"\"}', 1, '1611587843813', 'BattleMetricServerId', 'battlemetric server ID');
+INSERT INTO `server_config` VALUES (184, '{\"value\":{}}', 1, '1611587843813', 'BattleMetricServerDetail', 'battlemetric server info');
+INSERT INTO `server_config` VALUES (185, '{\"value\":[]}', 1, '1611587843813', 'ServerLogIgnoreSteamIdList', 'inore steamID list while fetching');
 COMMIT;
 
 -- ----------------------------
