@@ -1,5 +1,6 @@
 # suiyangdi-scum-game-log-platform
 髓扬帝SCUM游戏服务器日志平台，免费开源给各位服主使用，终结SCUM日志工具收费的时代。与其使用付费又受人控制的日志工具，为何不用免费的呢？
+Open source for SCUM game players / server holders
 
 视频教程地址：[https://www.bilibili.com/video/BV1Xr421t7u1/](https://www.bilibili.com/video/BV1Xr421t7u1/)
 
@@ -40,4 +41,4 @@
 ## 法律声明
 髓扬帝日志工具已申请中国/日本的计算机软件著作权，本工具供各位SCUM服主免费使用，禁止其他友商利用免费工具来盈利，实施以上行为将违反法律并可能触犯中国和日本国的刑法。其他服主发现有人进行类似的行为可以直接联系髓扬帝本人(QQ 1065617282)或者浙江之星律师事务所进行举报
 
-**此处仅代表本人声援 [996.ICU](https://github.com/996icu/996.ICU) 项目，关注受到国内资本家迫害的打工人**
+**声援 [996.ICU](https://github.com/996icu/996.ICU) 项目**
