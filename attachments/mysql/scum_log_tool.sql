@@ -154,6 +154,11 @@ INSERT INTO `server_config` VALUES (173, '{\"value\":false}', 1, '1611587843813'
 INSERT INTO `server_config` VALUES (183, '{\"value\":\"\"}', 1, '1611587843813', 'BattleMetricServerId', 'battlemetric server ID');
 INSERT INTO `server_config` VALUES (184, '{\"value\":{}}', 1, '1611587843813', 'BattleMetricServerDetail', 'battlemetric server info');
 INSERT INTO `server_config` VALUES (185, '{\"value\":[]}', 1, '1611587843813', 'ServerLogIgnoreSteamIdList', 'inore steamID list while fetching');
+INSERT INTO `server_config` VALUES (186, '{\"value\":\"\"}', 1, '1611587843813', 'PrivateBaseFolderPath', 'PrivateBaseFolderPath');
+INSERT INTO `server_config` VALUES (187, '{\"value\":false}', 1, '1611587843813', 'EnablePrivateLogsRollback', 'EnablePrivateLogsRollback');
+INSERT INTO `server_config` VALUES (188, '{\"value\":360000}', 1, '1611587843813', 'PrivateLogsRollbackSingleTimeout', 'PrivateLogsRollbackSingleTimeout');
+INSERT INTO `server_config` VALUES (189, '{\"value\":{\"recentTimeStamp\":\"1643399987145\",\"result\":\"\"}}', 1, '1611587843813', 'PrivateServerLogAsyncRecord', 'PrivateServerLogAsyncRecord');
+INSERT INTO `server_config` VALUES (190, '{\"value\":1000}', 0, '1611587843813', 'PrivateLogsRollbackInterval', 'PrivateLogsRollbackInterval');
 COMMIT;
 
 -- ----------------------------
