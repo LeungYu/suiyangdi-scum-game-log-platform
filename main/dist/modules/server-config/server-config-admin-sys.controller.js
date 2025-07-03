@@ -317,7 +317,8 @@ let ServerConfigAdminSysController = class ServerConfigAdminSysController {
                 const resUpdateEnableNitradoLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnableNitradoLogsRollback', value: JSON.stringify({ value: body.EnableNitradoLogsRollback }) });
                 const resUpdateEnableGGHostLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnableGGHostLogsRollback', value: JSON.stringify({ value: body.EnableGGHostLogsRollback }) });
                 const resUpdateGGHostLogsRollbackSingleTimeout = yield this.serverConfigService.updateServerConfig({ name: 'GGHostLogsRollbackSingleTimeout', value: JSON.stringify({ value: body.GGHostLogsRollbackSingleTimeout }) });
-                const resUpdateEnablePrivateLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnablePrivateLogsRollback', value: JSON.stringify({ value: false }) });
+                const resUpdateEnablePrivateLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnablePrivateLogsRollback', value: JSON.stringify({ value: body.EnablePrivateLogsRollback }) });
+                const resUpdatePrivateLogsRollbackSingleTimeout = yield this.serverConfigService.updateServerConfig({ name: 'PrivateLogsRollbackSingleTimeout', value: JSON.stringify({ value: body.PrivateLogsRollbackSingleTimeout }) });
                 const resUpdatePrivateServerLogAsyncRecord = yield this.serverConfigService.updateServerConfig({ name: 'PrivateServerLogAsyncRecord', value: JSON.stringify({ value: { recentTimeStamp: '', result: '' } }) });
             }
             const resUpdateGameServerType = yield this.serverConfigService.updateServerConfig({ name: 'GameServerType', value: JSON.stringify({ value: body.GameServerType }) });

@@ -54,7 +54,7 @@ let AuthCheckMiddleware = class AuthCheckMiddleware {
                 if (!req.session || !req.session.user || !req.session.user.userId) {
                     req.session.destroy(() => {
                         res.cookie(`scum.log.tool-${config_1.Config.getConf('SCUM_NO')}.sid`, '', auth_admin_sys_controller_1.cookieCfg);
-                        return res.json((0, response_builder_1.responseBuilder)(response_builder_1.ResponseStatusCode.NO_LOGIN, {}, 'NEED TO LOGIN'));
+                        return res.redirect(301, '/admin');
                     });
                 }
                 else {

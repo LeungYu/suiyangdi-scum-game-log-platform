@@ -142,7 +142,8 @@ let ServerSchedulesPrivateServerLogQueueService = ServerSchedulesPrivateServerLo
     }
     initializeGetServerLogsSchedule() {
         return __awaiter(this, void 0, void 0, function* () {
-            let PrivateBaseFolderPath = yield this.serverConfigService.getServerConfig({ name: 'PrivateBaseFolderPath' });
+            let resPrivateBaseFolderPath = yield this.serverConfigService.getServerConfig({ name: 'PrivateBaseFolderPath' });
+            const PrivateBaseFolderPath = JSON.parse(resPrivateBaseFolderPath.value).value;
             ServerSchedulesPrivateServerLogQueueService_1.updateFlag = false;
             ServerSchedulesPrivateServerLogQueueService_1.privateLogsInstance = new private_logs_1.default(PrivateBaseFolderPath, 'server-log');
         });
