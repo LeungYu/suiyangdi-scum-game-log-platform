@@ -24,6 +24,10 @@ export declare class UpdateAllGportalSettingsSysDto {
     EnableGGHostLogsRollback: boolean;
     GGHostLogsRollbackSingleTimeout: number;
     GGHostLogsRollbackInterval: number;
+    PrivateBaseFolderPath: string;
+    EnablePrivateLogsRollback: boolean;
+    PrivateLogsRollbackSingleTimeout: number;
+    PrivateLogsRollbackInterval: number;
     GameMapBorderInfo: {
         [props: string]: any;
     };
@@ -44,6 +48,9 @@ export declare class UpdateGportalSettingsSysDto {
     EnableGGHostLogsRollback: boolean;
     GGHostLogsRollbackSingleTimeout: number;
     GGHostLogsRollbackInterval: number;
+    EnablePrivateLogsRollback: boolean;
+    PrivateLogsRollbackSingleTimeout: number;
+    PrivateLogsRollbackInterval: number;
     GameAreaRanges: {
         [props: string]: any;
     };

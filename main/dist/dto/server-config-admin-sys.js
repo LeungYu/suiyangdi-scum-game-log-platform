@@ -14,6 +14,7 @@ const class_validator_1 = require("class-validator");
 const IsGPortalConfigs_1 = require("../validation/IsGPortalConfigs");
 const IsNitradoConfigs_1 = require("../validation/IsNitradoConfigs");
 const IsGGHostConfigs_1 = require("../validation/IsGGHostConfigs");
+const IsPrivateConfigs_1 = require("../validation/IsPrivateConfigs");
 class ListServerConfigSysDto {
 }
 exports.ListServerConfigSysDto = ListServerConfigSysDto;
@@ -126,6 +127,26 @@ __decorate([
     __metadata("design:type", Number)
 ], UpdateAllGportalSettingsSysDto.prototype, "GGHostLogsRollbackInterval", void 0);
 __decorate([
+    (0, class_validator_1.IsString)(),
+    (0, IsPrivateConfigs_1.IsPrivateConfigs)(['PrivateBaseFolderPath']),
+    __metadata("design:type", String)
+], UpdateAllGportalSettingsSysDto.prototype, "PrivateBaseFolderPath", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, IsPrivateConfigs_1.IsPrivateConfigs)(['EnablePrivateLogsRollback']),
+    __metadata("design:type", Boolean)
+], UpdateAllGportalSettingsSysDto.prototype, "EnablePrivateLogsRollback", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, IsPrivateConfigs_1.IsPrivateConfigs)(['EnablePrivateLogsRollback']),
+    __metadata("design:type", Number)
+], UpdateAllGportalSettingsSysDto.prototype, "PrivateLogsRollbackSingleTimeout", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, IsPrivateConfigs_1.IsPrivateConfigs)(['PrivateLogsRollbackInterval']),
+    __metadata("design:type", Number)
+], UpdateAllGportalSettingsSysDto.prototype, "PrivateLogsRollbackInterval", void 0);
+__decorate([
     (0, class_validator_1.IsObject)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Object)
@@ -179,6 +200,21 @@ __decorate([
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], UpdateGportalSettingsSysDto.prototype, "GGHostLogsRollbackInterval", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, IsPrivateConfigs_1.IsPrivateConfigs)(['EnablePrivateLogsRollback']),
+    __metadata("design:type", Boolean)
+], UpdateGportalSettingsSysDto.prototype, "EnablePrivateLogsRollback", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, IsPrivateConfigs_1.IsPrivateConfigs)(['EnablePrivateLogsRollback']),
+    __metadata("design:type", Number)
+], UpdateGportalSettingsSysDto.prototype, "PrivateLogsRollbackSingleTimeout", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, IsPrivateConfigs_1.IsPrivateConfigs)(['PrivateLogsRollbackInterval']),
+    __metadata("design:type", Number)
+], UpdateGportalSettingsSysDto.prototype, "PrivateLogsRollbackInterval", void 0);
 __decorate([
     (0, class_validator_1.IsObject)(),
     (0, class_validator_1.IsNotEmpty)(),

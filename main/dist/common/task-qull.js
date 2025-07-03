@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SingleGGHostServerLogQueue = exports.NitradoServerLogQueue = exports.SingleGPortalServerLogQueue = void 0;
+exports.SinglePrivateServerLogQueue = exports.SingleGGHostServerLogQueue = exports.NitradoServerLogQueue = exports.SingleGPortalServerLogQueue = void 0;
 const os = require("os");
 const Queue = require("bull");
 const config_1 = require("../config/config");
@@ -83,4 +83,5 @@ cleanRedisKeys(timeStamp);
 exports.SingleGPortalServerLogQueue = new Queue(`${config_1.Config.getConf('SCUM_NO')}-SingleGPortalServerLog-${timeStamp}`, redis);
 exports.NitradoServerLogQueue = new Queue(`${config_1.Config.getConf('SCUM_NO')}-NitradoServerLog-${timeStamp}`, redis);
 exports.SingleGGHostServerLogQueue = new Queue(`${config_1.Config.getConf('SCUM_NO')}-SingleGGHostServerLog-${timeStamp}`, redis);
+exports.SinglePrivateServerLogQueue = new Queue(`${config_1.Config.getConf('SCUM_NO')}-SinglePrivateServerLog-${timeStamp}`, redis);
 //# sourceMappingURL=task-qull.js.map

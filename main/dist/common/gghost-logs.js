@@ -79,8 +79,8 @@ class GGHostLogs {
                                 client
                                     .connect(connectionProperties)
                                     .then(() => {
-                                    var _a;
-                                    client.list(`${this.serverHost}_${this.serverPort}${((_a = this.ftpPath) === null || _a === void 0 ? void 0 : _a.length) ? this.ftpPath : '/SaveFiles/Logs'}`)
+                                    var _a, _b, _c;
+                                    client.list(`${((_a = this.serverPort) === null || _a === void 0 ? void 0 : _a.length) > 0 && ((_b = this.serverPort) === null || _b === void 0 ? void 0 : _b.length) > 0 ? (this.serverHost + '_' + this.serverPort) : ''}${((_c = this.ftpPath) === null || _c === void 0 ? void 0 : _c.length) ? this.ftpPath : '/SaveFiles/Logs'}`)
                                         .then(list => {
                                         const logsIndex = {};
                                         for (const item of list) {
@@ -119,8 +119,8 @@ class GGHostLogs {
                                     password: this.ftpPassword
                                 };
                                 client.on('ready', function () {
-                                    var _a;
-                                    client.list(`${this.serverHost}_${this.serverPort}${((_a = this.ftpPath) === null || _a === void 0 ? void 0 : _a.length) ? this.ftpPath : '/SaveFiles/Logs'}`, function (e, list) {
+                                    var _a, _b, _c;
+                                    client.list(`${((_a = this.serverPort) === null || _a === void 0 ? void 0 : _a.length) > 0 && ((_b = this.serverPort) === null || _b === void 0 ? void 0 : _b.length) > 0 ? (this.serverHost + '_' + this.serverPort) : ''}${((_c = this.ftpPath) === null || _c === void 0 ? void 0 : _c.length) ? this.ftpPath : '/SaveFiles/Logs'}`, function (e, list) {
                                         if (e) {
                                             const errorDesc = '[error][fetch file names in folder]' + e.toString();
                                             (0, morgan_log_1.logGGHostProccessLog)(true, errorDesc);
@@ -182,8 +182,8 @@ class GGHostLogs {
                                 client
                                     .connect(connectionProperties)
                                     .then(() => {
-                                    var _a;
-                                    client.get(`${this.serverHost}_${this.serverPort}${((_a = this.ftpPath) === null || _a === void 0 ? void 0 : _a.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`)
+                                    var _a, _b, _c;
+                                    client.get(`${((_a = this.serverPort) === null || _a === void 0 ? void 0 : _a.length) > 0 && ((_b = this.serverPort) === null || _b === void 0 ? void 0 : _b.length) > 0 ? (this.serverHost + '_' + this.serverPort) : ''}${((_c = this.ftpPath) === null || _c === void 0 ? void 0 : _c.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`)
                                         .then(stream => {
                                         const strContent = stream.toString('utf16le');
                                         try {
@@ -234,8 +234,8 @@ class GGHostLogs {
                                     password: this.ftpPassword
                                 };
                                 client.on('ready', function () {
-                                    var _a;
-                                    client.get(`${this.serverHost}_${this.serverPort}${((_a = this.ftpPath) === null || _a === void 0 ? void 0 : _a.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`, function (e, stream) {
+                                    var _a, _b, _c;
+                                    client.get(`${((_a = this.serverPort) === null || _a === void 0 ? void 0 : _a.length) > 0 && ((_b = this.serverPort) === null || _b === void 0 ? void 0 : _b.length) > 0 ? (this.serverHost + '_' + this.serverPort) : ''}${((_c = this.ftpPath) === null || _c === void 0 ? void 0 : _c.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`, function (e, stream) {
                                         if (e) {
                                             const errorDesc = '[error][process]process with kill log' + e.toString();
                                             (0, morgan_log_1.logServerKill2LoginLog)(true, errorDesc);
@@ -332,8 +332,8 @@ class GGHostLogs {
                                 client
                                     .connect(connectionProperties)
                                     .then(() => {
-                                    var _a;
-                                    client.get(`${this.serverHost}_${this.serverPort}${((_a = this.ftpPath) === null || _a === void 0 ? void 0 : _a.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`)
+                                    var _a, _b, _c;
+                                    client.get(`${((_a = this.serverPort) === null || _a === void 0 ? void 0 : _a.length) > 0 && ((_b = this.serverPort) === null || _b === void 0 ? void 0 : _b.length) > 0 ? (this.serverHost + '_' + this.serverPort) : ''}${((_c = this.ftpPath) === null || _c === void 0 ? void 0 : _c.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`)
                                         .then(stream => {
                                         const strContent = stream.toString('utf16le');
                                         try {
@@ -385,8 +385,8 @@ class GGHostLogs {
                                     password: this.ftpPassword
                                 };
                                 client.on('ready', function () {
-                                    var _a;
-                                    client.get(`${this.serverHost}_${this.serverPort}${((_a = this.ftpPath) === null || _a === void 0 ? void 0 : _a.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`, function (e, stream) {
+                                    var _a, _b, _c;
+                                    client.get(`${((_a = this.serverPort) === null || _a === void 0 ? void 0 : _a.length) > 0 && ((_b = this.serverPort) === null || _b === void 0 ? void 0 : _b.length) > 0 ? (this.serverHost + '_' + this.serverPort) : ''}${((_c = this.ftpPath) === null || _c === void 0 ? void 0 : _c.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`, function (e, stream) {
                                         if (e) {
                                             const errorDesc = '[error][process]process with login log' + e.toString();
                                             (0, morgan_log_1.logServerKill2LoginLog)(true, errorDesc);
@@ -484,8 +484,8 @@ class GGHostLogs {
                                 client
                                     .connect(connectionProperties)
                                     .then(() => {
-                                    var _a;
-                                    client.get(`${this.serverHost}_${this.serverPort}${((_a = this.ftpPath) === null || _a === void 0 ? void 0 : _a.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`)
+                                    var _a, _b, _c;
+                                    client.get(`${((_a = this.serverPort) === null || _a === void 0 ? void 0 : _a.length) > 0 && ((_b = this.serverPort) === null || _b === void 0 ? void 0 : _b.length) > 0 ? (this.serverHost + '_' + this.serverPort) : ''}${((_c = this.ftpPath) === null || _c === void 0 ? void 0 : _c.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`)
                                         .then(stream => {
                                         const strContent = stream.toString('utf16le');
                                         try {
@@ -537,8 +537,8 @@ class GGHostLogs {
                                     password: this.ftpPassword
                                 };
                                 client.on('ready', function () {
-                                    var _a;
-                                    client.get(`${this.serverHost}_${this.serverPort}${((_a = this.ftpPath) === null || _a === void 0 ? void 0 : _a.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`, function (e, stream) {
+                                    var _a, _b, _c;
+                                    client.get(`${((_a = this.serverPort) === null || _a === void 0 ? void 0 : _a.length) > 0 && ((_b = this.serverPort) === null || _b === void 0 ? void 0 : _b.length) > 0 ? (this.serverHost + '_' + this.serverPort) : ''}${((_c = this.ftpPath) === null || _c === void 0 ? void 0 : _c.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`, function (e, stream) {
                                         if (e) {
                                             const errorDesc = '[error][process]process with admin log' + e.toString();
                                             (0, morgan_log_1.logServerKill2LoginLog)(true, errorDesc);
@@ -633,8 +633,8 @@ class GGHostLogs {
                         client
                             .connect(connectionProperties)
                             .then(() => {
-                            var _a;
-                            client.get(`${this.serverHost}_${this.serverPort}${((_a = this.ftpPath) === null || _a === void 0 ? void 0 : _a.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`)
+                            var _a, _b, _c;
+                            client.get(`${((_a = this.serverPort) === null || _a === void 0 ? void 0 : _a.length) > 0 && ((_b = this.serverPort) === null || _b === void 0 ? void 0 : _b.length) > 0 ? (this.serverHost + '_' + this.serverPort) : ''}${((_c = this.ftpPath) === null || _c === void 0 ? void 0 : _c.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`)
                                 .then(stream => {
                                 const strContent = stream.toString('utf16le');
                                 try {
@@ -689,8 +689,8 @@ class GGHostLogs {
                                     password: this.ftpPassword
                                 };
                                 client.on('ready', function () {
-                                    var _a;
-                                    client.get(`${this.serverHost}_${this.serverPort}${((_a = this.ftpPath) === null || _a === void 0 ? void 0 : _a.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`, function (e, stream) {
+                                    var _a, _b, _c;
+                                    client.get(`${((_a = this.serverPort) === null || _a === void 0 ? void 0 : _a.length) > 0 && ((_b = this.serverPort) === null || _b === void 0 ? void 0 : _b.length) > 0 ? (this.serverHost + '_' + this.serverPort) : ''}${((_c = this.ftpPath) === null || _c === void 0 ? void 0 : _c.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`, function (e, stream) {
                                         if (e) {
                                             const errorDesc = '[error][process]fetch log' + e.toString();
                                             (0, morgan_log_1.logGGHostProccessLog)(true, errorDesc);
@@ -785,8 +785,8 @@ class GGHostLogs {
                         client
                             .connect(connectionProperties)
                             .then(() => {
-                            var _a;
-                            client.get(`${this.serverHost}_${this.serverPort}${((_a = this.ftpPath) === null || _a === void 0 ? void 0 : _a.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`)
+                            var _a, _b, _c;
+                            client.get(`${((_a = this.serverPort) === null || _a === void 0 ? void 0 : _a.length) > 0 && ((_b = this.serverPort) === null || _b === void 0 ? void 0 : _b.length) > 0 ? (this.serverHost + '_' + this.serverPort) : ''}${((_c = this.ftpPath) === null || _c === void 0 ? void 0 : _c.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`)
                                 .then(stream => {
                                 const strContent = stream.toString('utf16le');
                                 try {
@@ -848,8 +848,8 @@ class GGHostLogs {
                                     password: this.ftpPassword
                                 };
                                 client.on('ready', function () {
-                                    var _a;
-                                    client.get(`${this.serverHost}_${this.serverPort}${((_a = this.ftpPath) === null || _a === void 0 ? void 0 : _a.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`, function (e, stream) {
+                                    var _a, _b, _c;
+                                    client.get(`${((_a = this.serverPort) === null || _a === void 0 ? void 0 : _a.length) > 0 && ((_b = this.serverPort) === null || _b === void 0 ? void 0 : _b.length) > 0 ? (this.serverHost + '_' + this.serverPort) : ''}${((_c = this.ftpPath) === null || _c === void 0 ? void 0 : _c.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`, function (e, stream) {
                                         if (e) {
                                             const errorDesc = '[error][process]process with actions log' + e.toString();
                                             (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);
@@ -954,8 +954,8 @@ class GGHostLogs {
                                 client
                                     .connect(connectionProperties)
                                     .then(() => {
-                                    var _a;
-                                    client.get(`${this.serverHost}_${this.serverPort}${((_a = this.ftpPath) === null || _a === void 0 ? void 0 : _a.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`)
+                                    var _a, _b, _c;
+                                    client.get(`${((_a = this.serverPort) === null || _a === void 0 ? void 0 : _a.length) > 0 && ((_b = this.serverPort) === null || _b === void 0 ? void 0 : _b.length) > 0 ? (this.serverHost + '_' + this.serverPort) : ''}${((_c = this.ftpPath) === null || _c === void 0 ? void 0 : _c.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`)
                                         .then(stream => {
                                         const strContent = stream.toString('utf16le');
                                         try {
@@ -1007,8 +1007,8 @@ class GGHostLogs {
                                     password: this.ftpPassword
                                 };
                                 client.on('ready', function () {
-                                    var _a;
-                                    client.get(`${this.serverHost}_${this.serverPort}${((_a = this.ftpPath) === null || _a === void 0 ? void 0 : _a.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`, function (e, stream) {
+                                    var _a, _b, _c;
+                                    client.get(`${((_a = this.serverPort) === null || _a === void 0 ? void 0 : _a.length) > 0 && ((_b = this.serverPort) === null || _b === void 0 ? void 0 : _b.length) > 0 ? (this.serverHost + '_' + this.serverPort) : ''}${((_c = this.ftpPath) === null || _c === void 0 ? void 0 : _c.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`, function (e, stream) {
                                         if (e) {
                                             const errorDesc = '[error][process]process with violations log' + e.toString();
                                             (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);
@@ -1106,8 +1106,8 @@ class GGHostLogs {
                                 client
                                     .connect(connectionProperties)
                                     .then(() => {
-                                    var _a;
-                                    client.get(`${this.serverHost}_${this.serverPort}${((_a = this.ftpPath) === null || _a === void 0 ? void 0 : _a.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`)
+                                    var _a, _b, _c;
+                                    client.get(`${((_a = this.serverPort) === null || _a === void 0 ? void 0 : _a.length) > 0 && ((_b = this.serverPort) === null || _b === void 0 ? void 0 : _b.length) > 0 ? (this.serverHost + '_' + this.serverPort) : ''}${((_c = this.ftpPath) === null || _c === void 0 ? void 0 : _c.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`)
                                         .then(stream => {
                                         const strContent = stream.toString('utf16le');
                                         try {
@@ -1166,8 +1166,8 @@ class GGHostLogs {
                                     password: this.ftpPassword
                                 };
                                 client.on('ready', function () {
-                                    var _a;
-                                    client.get(`${this.serverHost}_${this.serverPort}${((_a = this.ftpPath) === null || _a === void 0 ? void 0 : _a.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`, function (e, stream) {
+                                    var _a, _b, _c;
+                                    client.get(`${((_a = this.serverPort) === null || _a === void 0 ? void 0 : _a.length) > 0 && ((_b = this.serverPort) === null || _b === void 0 ? void 0 : _b.length) > 0 ? (this.serverHost + '_' + this.serverPort) : ''}${((_c = this.ftpPath) === null || _c === void 0 ? void 0 : _c.length) ? this.ftpPath : '/SaveFiles/Logs'}/${fileName}`, function (e, stream) {
                                         if (e) {
                                             const errorDesc = '[error][process]process with economy log' + e.toString();
                                             (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);

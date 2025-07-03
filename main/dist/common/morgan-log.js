@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMorgan = exports.logServerStatus = exports.logServerActions2ViolationsLogLog = exports.logServerAdmin2ChatLogLog = exports.logServerKill2LoginLog = exports.logGGHostProccessOtherLog = exports.logGGHostProccessLog = exports.logNitradoProccessLog = exports.logGPortalProccessOtherLog = exports.logGPortalProccessLog = exports.logScheduleBackup = exports.logBussiness = exports.createMorgan = void 0;
+exports.getMorgan = exports.logServerStatus = exports.logServerActions2ViolationsLogLog = exports.logServerAdmin2ChatLogLog = exports.logServerKill2LoginLog = exports.logPrivateProccessLog = exports.logGGHostProccessOtherLog = exports.logGGHostProccessLog = exports.logNitradoProccessLog = exports.logGPortalProccessOtherLog = exports.logGPortalProccessLog = exports.logScheduleBackup = exports.logBussiness = exports.createMorgan = void 0;
 const morgan = require("morgan");
 const moment = require("moment");
 const config_1 = require("../config/config");
@@ -23,6 +23,7 @@ let scheduleGPortalProccessOtherLogLogStream;
 let scheduleNitradoProccessLogLogStream;
 let scheduleGGHostProccessLogLogStream;
 let scheduleGGHostProccessOtherLogLogStream;
+let schedulePrivateProccessLogLogStream;
 let scheduleServerKill2LoginLogLogStream;
 let scheduleServerAdmin2ChatLogLogStream;
 let scheduleServerActions2ViolationsLogLogStream;
@@ -82,6 +83,13 @@ function createMorgan() {
             scheduleGGHostProccessOtherLogLogStream = FileStreamRotator.getStream({
                 date_format: 'YYYYMMDD',
                 filename: path.resolve(config_1.Config.getConf('MORGAN_LOGS_PATH'), `./gghost-proccess-other-log-%DATE%.log`),
+                frequency: 'daily',
+                size: '2m',
+                verbose: false
+            });
+            schedulePrivateProccessLogLogStream = FileStreamRotator.getStream({
+                date_format: 'YYYYMMDD',
+                filename: path.resolve(config_1.Config.getConf('MORGAN_LOGS_PATH'), `./private-proccess-log-%DATE%.log`),
                 frequency: 'daily',
                 size: '2m',
                 verbose: false
@@ -195,6 +203,17 @@ function logGGHostProccessOtherLog(print, ...contents) {
     });
 }
 exports.logGGHostProccessOtherLog = logGGHostProccessOtherLog;
+function logPrivateProccessLog(print, ...contents) {
+    return __awaiter(this, void 0, void 0, function* () {
+        print && console.log.apply(this, contents);
+        if (process.env.SERVER_NODE_ENV === 'production') {
+            for (let content of contents) {
+                schedulePrivateProccessLogLogStream.write(`[${moment().format('YYYY-MM-DD HH:mm:ss ZZ')}] ${(typeof content === 'object' ? JSON.stringify(content) : content)}\n`, 'utf-8');
+            }
+        }
+    });
+}
+exports.logPrivateProccessLog = logPrivateProccessLog;
 function logServerKill2LoginLog(print, ...contents) {
     return __awaiter(this, void 0, void 0, function* () {
         print && console.log.apply(this, contents);

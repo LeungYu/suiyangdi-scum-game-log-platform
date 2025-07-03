@@ -17,6 +17,7 @@ const kill_service_1 = require("../kill/kill.service");
 const server_schedules_gportal_server_log_queue_service_1 = require("./server-schedules.gportal-server-log.queue.service");
 const server_schedules_nitrado_server_log_queue_service_1 = require("./server-schedules.nitrado-server-log.queue.service");
 const server_schedules_gghost_server_log_queue_service_1 = require("./server-schedules.gghost-server-log.queue.service");
+const server_schedules_private_server_log_queue_service_1 = require("./server-schedules.private-server-log.queue.service");
 const admin_command_entity_1 = require("../../entity/admin-command.entity");
 const chat_message_entity_1 = require("../../entity/chat-message.entity");
 const actions_record_entity_1 = require("../../entity/actions-record.entity");
@@ -48,6 +49,7 @@ ServerSchedulesModule = __decorate([
             server_schedules_gportal_server_log_queue_service_1.ServerSchedulesGportalServerLogQueueService,
             server_schedules_nitrado_server_log_queue_service_1.ServerSchedulesNitradoServerLogQueueService,
             server_schedules_gghost_server_log_queue_service_1.ServerSchedulesGGHostServerLogQueueService,
+            server_schedules_private_server_log_queue_service_1.ServerSchedulesPrivateServerLogQueueService,
             user_login_service_1.UserLoginService,
             admin_command_service_1.AdminCommandService,
             chat_message_service_1.ChatMessageService,

@@ -42,6 +42,7 @@ const economy_service_1 = require("../economy/economy.service");
 const server_schedules_gportal_server_log_queue_service_1 = require("../server-schedules/server-schedules.gportal-server-log.queue.service");
 const server_schedules_gghost_server_log_queue_service_1 = require("../server-schedules/server-schedules.gghost-server-log.queue.service");
 const server_schedules_nitrado_server_log_queue_service_1 = require("../server-schedules/server-schedules.nitrado-server-log.queue.service");
+const server_schedules_private_server_log_queue_service_1 = require("../server-schedules/server-schedules.private-server-log.queue.service");
 const vuf = require('buffer').Buffer;
 const axios = require('axios');
 let ServerConfigAdminSysController = class ServerConfigAdminSysController {
@@ -173,6 +174,11 @@ let ServerConfigAdminSysController = class ServerConfigAdminSysController {
             const resGGHostLogsRollbackSingleTimeout = yield this.serverConfigService.getServerConfig({ name: 'GGHostLogsRollbackSingleTimeout' });
             const resGGHostLogsRollbackInterval = yield this.serverConfigService.getServerConfig({ name: 'GGHostLogsRollbackInterval' });
             const resGGHostServerLogAsyncRecord = yield this.serverConfigService.getServerConfig({ name: 'GGHostServerLogAsyncRecord' });
+            const resPrivateBaseFolderPath = yield this.serverConfigService.getServerConfig({ name: 'PrivateBaseFolderPath' });
+            const resEnablePrivateLogsRollback = yield this.serverConfigService.getServerConfig({ name: 'EnablePrivateLogsRollback' });
+            const resPrivateLogsRollbackSingleTimeout = yield this.serverConfigService.getServerConfig({ name: 'PrivateLogsRollbackSingleTimeout' });
+            const resPrivateLogsRollbackInterval = yield this.serverConfigService.getServerConfig({ name: 'PrivateLogsRollbackInterval' });
+            const resPrivateServerLogAsyncRecord = yield this.serverConfigService.getServerConfig({ name: 'PrivateServerLogAsyncRecord' });
             const resGameMapBorderInfo = yield this.serverConfigService.getServerConfig({ name: 'GameMapBorderInfo' });
             const resGameMapImageUrl = yield this.serverConfigService.getServerConfig({ name: 'GameMapImageUrl' });
             const resGameAreaRanges = yield this.serverConfigService.getServerConfig({ name: 'GameAreaRanges' });
@@ -202,6 +208,11 @@ let ServerConfigAdminSysController = class ServerConfigAdminSysController {
                 GGHostLogsRollbackSingleTimeout: resGGHostLogsRollbackSingleTimeout && resGGHostLogsRollbackSingleTimeout.id ? JSON.parse(resGGHostLogsRollbackSingleTimeout.value).value : null,
                 GGHostLogsRollbackInterval: resGGHostLogsRollbackInterval && resGGHostLogsRollbackInterval.id ? JSON.parse(resGGHostLogsRollbackInterval.value).value : null,
                 GGHostServerLogAsyncRecord: resGGHostServerLogAsyncRecord && resGGHostServerLogAsyncRecord.id ? JSON.parse(resGGHostServerLogAsyncRecord.value).value : null,
+                PrivateBaseFolderPath: resPrivateBaseFolderPath && resPrivateBaseFolderPath.id ? JSON.parse(resPrivateBaseFolderPath.value).value : null,
+                EnablePrivateLogsRollback: resEnablePrivateLogsRollback && resEnablePrivateLogsRollback.id ? JSON.parse(resEnablePrivateLogsRollback.value).value : null,
+                PrivateLogsRollbackSingleTimeout: resPrivateLogsRollbackSingleTimeout && resPrivateLogsRollbackSingleTimeout.id ? JSON.parse(resPrivateLogsRollbackSingleTimeout.value).value : null,
+                PrivateLogsRollbackInterval: resPrivateLogsRollbackInterval && resPrivateLogsRollbackInterval.id ? JSON.parse(resPrivateLogsRollbackInterval.value).value : null,
+                PrivateServerLogAsyncRecord: resPrivateServerLogAsyncRecord && resPrivateServerLogAsyncRecord.id ? JSON.parse(resPrivateServerLogAsyncRecord.value).value : null,
                 GameMapBorderInfo: resGameMapBorderInfo && resGameMapBorderInfo.id ? JSON.parse(resGameMapBorderInfo.value).value : null,
                 GameMapImageUrl: resGameMapImageUrl && resGameMapImageUrl.id ? JSON.parse(resGameMapImageUrl.value).value : null,
                 GameAreaRanges: resGameAreaRanges && resGameAreaRanges.id ? JSON.parse(resGameAreaRanges.value).value : null,
@@ -226,34 +237,40 @@ let ServerConfigAdminSysController = class ServerConfigAdminSysController {
                     const resUpdateEnableGPortalLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnableGPortalLogsRollback', value: JSON.stringify({ value: false }) });
                     const resUpdateGPortalLogsRollbackSingleTimeout = yield this.serverConfigService.updateServerConfig({ name: 'GPortalLogsRollbackSingleTimeout', value: JSON.stringify({ value: body.GPortalLogsRollbackSingleTimeout }) });
                     const resUpdateGPortalServerLogAsyncRecord = yield this.serverConfigService.updateServerConfig({ name: 'GPortalServerLogAsyncRecord', value: JSON.stringify({ value: { recentTimeStamp: '', result: '' } }) });
-                    const resUpdateEnableGGHostLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnableGGHostLogsRollback', value: JSON.stringify({ value: false }) });
-                    const resUpdateGGHostLogsRollbackSingleTimeout = yield this.serverConfigService.updateServerConfig({ name: 'GGHostLogsRollbackSingleTimeout', value: JSON.stringify({ value: body.GGHostLogsRollbackSingleTimeout }) });
-                    const resUpdateGGHostServerLogAsyncRecord = yield this.serverConfigService.updateServerConfig({ name: 'GGHostServerLogAsyncRecord', value: JSON.stringify({ value: { recentTimeStamp: '', result: '' } }) });
                     const resUpdateGPortalAccount = yield this.serverConfigService.updateServerConfig({ name: 'GPortalAccount', value: JSON.stringify({ value: '' }) });
                     const resUpdateGPortalPassword = yield this.serverConfigService.updateServerConfig({ name: 'GPortalPassword', value: JSON.stringify({ value: '' }) });
                     const resUpdateGPortalFTPUrl = yield this.serverConfigService.updateServerConfig({ name: 'GPortalFTPUrl', value: JSON.stringify({ value: '' }) });
                     const resUpdateGPortalFTPAccount = yield this.serverConfigService.updateServerConfig({ name: 'GPortalFTPAccount', value: JSON.stringify({ value: '' }) });
                     const resUpdateGPortalFTPPassword = yield this.serverConfigService.updateServerConfig({ name: 'GPortalFTPPassword', value: JSON.stringify({ value: '' }) });
+                    const resUpdateEnableGGHostLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnableGGHostLogsRollback', value: JSON.stringify({ value: false }) });
+                    const resUpdateGGHostLogsRollbackSingleTimeout = yield this.serverConfigService.updateServerConfig({ name: 'GGHostLogsRollbackSingleTimeout', value: JSON.stringify({ value: body.GGHostLogsRollbackSingleTimeout }) });
+                    const resUpdateGGHostServerLogAsyncRecord = yield this.serverConfigService.updateServerConfig({ name: 'GGHostServerLogAsyncRecord', value: JSON.stringify({ value: { recentTimeStamp: '', result: '' } }) });
                     const resUpdateGGHostServerDetail = yield this.serverConfigService.updateServerConfig({ name: 'GGHostServerDetail', value: JSON.stringify({ value: '' }) });
                     const resUpdateGGHostFTPPath = yield this.serverConfigService.updateServerConfig({ name: 'GGHostFTPPath', value: JSON.stringify({ value: '' }) });
                     const resUpdateGGHostFTPType = yield this.serverConfigService.updateServerConfig({ name: 'GGHostGGHostFTPType', value: JSON.stringify({ value: '' }) });
                     const resUpdateGGHostFTPUrl = yield this.serverConfigService.updateServerConfig({ name: 'GGHostFTPUrl', value: JSON.stringify({ value: '' }) });
                     const resUpdateGGHostFTPAccount = yield this.serverConfigService.updateServerConfig({ name: 'GGHostFTPAccount', value: JSON.stringify({ value: '' }) });
                     const resUpdateGGHostFTPPassword = yield this.serverConfigService.updateServerConfig({ name: 'GGHostFTPPassword', value: JSON.stringify({ value: '' }) });
+                    const resUpdatePrivateBaseFolderPath = yield this.serverConfigService.updateServerConfig({ name: 'PrivateBaseFolderPath', value: JSON.stringify({ value: '' }) });
+                    const resUpdateEnablePrivateLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnablePrivateLogsRollback', value: JSON.stringify({ value: false }) });
+                    const resUpdatePrivateServerLogAsyncRecord = yield this.serverConfigService.updateServerConfig({ name: 'PrivateServerLogAsyncRecord', value: JSON.stringify({ value: { recentTimeStamp: '', result: '' } }) });
                 }
                 else if (body.GameServerType === 'GPORTAL') {
-                    const resUpdateEnableGGHostLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnableGGHostLogsRollback', value: JSON.stringify({ value: false }) });
-                    const resUpdateGGHostLogsRollbackSingleTimeout = yield this.serverConfigService.updateServerConfig({ name: 'GGHostLogsRollbackSingleTimeout', value: JSON.stringify({ value: body.GGHostLogsRollbackSingleTimeout }) });
-                    const resUpdateGGHostServerLogAsyncRecord = yield this.serverConfigService.updateServerConfig({ name: 'GGHostServerLogAsyncRecord', value: JSON.stringify({ value: { recentTimeStamp: '', result: '' } }) });
                     const resUpdateEnableNitradoLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnableNitradoLogsRollback', value: JSON.stringify({ value: false }) });
                     const resUpdateNitradoServerLogAsyncRecord = yield this.serverConfigService.updateServerConfig({ name: 'NitradoServerLogAsyncRecord', value: JSON.stringify({ value: { recentTimeStamp: '', result: '' } }) });
                     const resUpdateNitradoAuthorizationToken = yield this.serverConfigService.updateServerConfig({ name: 'NitradoAuthorizationToken', value: JSON.stringify({ value: '' }) });
+                    const resUpdateEnableGGHostLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnableGGHostLogsRollback', value: JSON.stringify({ value: false }) });
+                    const resUpdateGGHostLogsRollbackSingleTimeout = yield this.serverConfigService.updateServerConfig({ name: 'GGHostLogsRollbackSingleTimeout', value: JSON.stringify({ value: body.GGHostLogsRollbackSingleTimeout }) });
+                    const resUpdateGGHostServerLogAsyncRecord = yield this.serverConfigService.updateServerConfig({ name: 'GGHostServerLogAsyncRecord', value: JSON.stringify({ value: { recentTimeStamp: '', result: '' } }) });
                     const resUpdateGGHostServerDetail = yield this.serverConfigService.updateServerConfig({ name: 'GGHostServerDetail', value: JSON.stringify({ value: '' }) });
                     const resUpdateGGHostFTPPath = yield this.serverConfigService.updateServerConfig({ name: 'GGHostFTPPath', value: JSON.stringify({ value: '' }) });
                     const resUpdateGGHostFTPType = yield this.serverConfigService.updateServerConfig({ name: 'GGHostFTPType', value: JSON.stringify({ value: '' }) });
                     const resUpdateGGHostFTPUrl = yield this.serverConfigService.updateServerConfig({ name: 'GGHostFTPUrl', value: JSON.stringify({ value: '' }) });
                     const resUpdateGGHostFTPAccount = yield this.serverConfigService.updateServerConfig({ name: 'GGHostFTPAccount', value: JSON.stringify({ value: '' }) });
                     const resUpdateGGHostFTPPassword = yield this.serverConfigService.updateServerConfig({ name: 'GGHostFTPPassword', value: JSON.stringify({ value: '' }) });
+                    const resUpdatePrivateBaseFolderPath = yield this.serverConfigService.updateServerConfig({ name: 'PrivateBaseFolderPath', value: JSON.stringify({ value: '' }) });
+                    const resUpdateEnablePrivateLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnablePrivateLogsRollback', value: JSON.stringify({ value: false }) });
+                    const resUpdatePrivateServerLogAsyncRecord = yield this.serverConfigService.updateServerConfig({ name: 'PrivateServerLogAsyncRecord', value: JSON.stringify({ value: { recentTimeStamp: '', result: '' } }) });
                 }
                 else if (body.GameServerType === 'GGHOST') {
                     const resUpdateEnableGPortalLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnableGPortalLogsRollback', value: JSON.stringify({ value: false }) });
@@ -264,6 +281,31 @@ let ServerConfigAdminSysController = class ServerConfigAdminSysController {
                     const resUpdateGPortalFTPUrl = yield this.serverConfigService.updateServerConfig({ name: 'GPortalFTPUrl', value: JSON.stringify({ value: '' }) });
                     const resUpdateGPortalFTPAccount = yield this.serverConfigService.updateServerConfig({ name: 'GPortalFTPAccount', value: JSON.stringify({ value: '' }) });
                     const resUpdateGPortalFTPPassword = yield this.serverConfigService.updateServerConfig({ name: 'GPortalFTPPassword', value: JSON.stringify({ value: '' }) });
+                    const resUpdateNitradoServerLogAsyncRecord = yield this.serverConfigService.updateServerConfig({ name: 'NitradoServerLogAsyncRecord', value: JSON.stringify({ value: { recentTimeStamp: '', result: '' } }) });
+                    const resUpdateNitradoAuthorizationToken = yield this.serverConfigService.updateServerConfig({ name: 'NitradoAuthorizationToken', value: JSON.stringify({ value: '' }) });
+                    const resUpdatePrivateBaseFolderPath = yield this.serverConfigService.updateServerConfig({ name: 'PrivateBaseFolderPath', value: JSON.stringify({ value: '' }) });
+                    const resUpdateEnablePrivateLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnablePrivateLogsRollback', value: JSON.stringify({ value: false }) });
+                    const resUpdatePrivateServerLogAsyncRecord = yield this.serverConfigService.updateServerConfig({ name: 'PrivateServerLogAsyncRecord', value: JSON.stringify({ value: { recentTimeStamp: '', result: '' } }) });
+                }
+                else if (body.GameServerType === 'PRIVATE') {
+                    const resUpdateEnableGPortalLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnableGPortalLogsRollback', value: JSON.stringify({ value: false }) });
+                    const resUpdateGPortalLogsRollbackSingleTimeout = yield this.serverConfigService.updateServerConfig({ name: 'GPortalLogsRollbackSingleTimeout', value: JSON.stringify({ value: body.GPortalLogsRollbackSingleTimeout }) });
+                    const resUpdateGPortalServerLogAsyncRecord = yield this.serverConfigService.updateServerConfig({ name: 'GPortalServerLogAsyncRecord', value: JSON.stringify({ value: { recentTimeStamp: '', result: '' } }) });
+                    const resUpdateGPortalAccount = yield this.serverConfigService.updateServerConfig({ name: 'GPortalAccount', value: JSON.stringify({ value: '' }) });
+                    const resUpdateGPortalPassword = yield this.serverConfigService.updateServerConfig({ name: 'GPortalPassword', value: JSON.stringify({ value: '' }) });
+                    const resUpdateGPortalFTPUrl = yield this.serverConfigService.updateServerConfig({ name: 'GPortalFTPUrl', value: JSON.stringify({ value: '' }) });
+                    const resUpdateGPortalFTPAccount = yield this.serverConfigService.updateServerConfig({ name: 'GPortalFTPAccount', value: JSON.stringify({ value: '' }) });
+                    const resUpdateGPortalFTPPassword = yield this.serverConfigService.updateServerConfig({ name: 'GPortalFTPPassword', value: JSON.stringify({ value: '' }) });
+                    const resUpdateEnableGGHostLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnableGGHostLogsRollback', value: JSON.stringify({ value: false }) });
+                    const resUpdateGGHostLogsRollbackSingleTimeout = yield this.serverConfigService.updateServerConfig({ name: 'GGHostLogsRollbackSingleTimeout', value: JSON.stringify({ value: body.GGHostLogsRollbackSingleTimeout }) });
+                    const resUpdateGGHostServerLogAsyncRecord = yield this.serverConfigService.updateServerConfig({ name: 'GGHostServerLogAsyncRecord', value: JSON.stringify({ value: { recentTimeStamp: '', result: '' } }) });
+                    const resUpdateGGHostServerDetail = yield this.serverConfigService.updateServerConfig({ name: 'GGHostServerDetail', value: JSON.stringify({ value: '' }) });
+                    const resUpdateGGHostFTPPath = yield this.serverConfigService.updateServerConfig({ name: 'GGHostFTPPath', value: JSON.stringify({ value: '' }) });
+                    const resUpdateGGHostFTPType = yield this.serverConfigService.updateServerConfig({ name: 'GGHostGGHostFTPType', value: JSON.stringify({ value: '' }) });
+                    const resUpdateGGHostFTPUrl = yield this.serverConfigService.updateServerConfig({ name: 'GGHostFTPUrl', value: JSON.stringify({ value: '' }) });
+                    const resUpdateGGHostFTPAccount = yield this.serverConfigService.updateServerConfig({ name: 'GGHostFTPAccount', value: JSON.stringify({ value: '' }) });
+                    const resUpdateGGHostFTPPassword = yield this.serverConfigService.updateServerConfig({ name: 'GGHostFTPPassword', value: JSON.stringify({ value: '' }) });
+                    const resUpdateNitradoServerLogAsyncRecord = yield this.serverConfigService.updateServerConfig({ name: 'NitradoServerLogAsyncRecord', value: JSON.stringify({ value: { recentTimeStamp: '', result: '' } }) });
                     const resUpdateNitradoAuthorizationToken = yield this.serverConfigService.updateServerConfig({ name: 'NitradoAuthorizationToken', value: JSON.stringify({ value: '' }) });
                 }
                 const resUpdateServerIP = yield this.serverConfigService.updateServerConfig({ name: 'ServerIP', value: JSON.stringify({ value: '' }) });
@@ -275,6 +317,8 @@ let ServerConfigAdminSysController = class ServerConfigAdminSysController {
                 const resUpdateEnableNitradoLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnableNitradoLogsRollback', value: JSON.stringify({ value: body.EnableNitradoLogsRollback }) });
                 const resUpdateEnableGGHostLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnableGGHostLogsRollback', value: JSON.stringify({ value: body.EnableGGHostLogsRollback }) });
                 const resUpdateGGHostLogsRollbackSingleTimeout = yield this.serverConfigService.updateServerConfig({ name: 'GGHostLogsRollbackSingleTimeout', value: JSON.stringify({ value: body.GGHostLogsRollbackSingleTimeout }) });
+                const resUpdateEnablePrivateLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnablePrivateLogsRollback', value: JSON.stringify({ value: false }) });
+                const resUpdatePrivateServerLogAsyncRecord = yield this.serverConfigService.updateServerConfig({ name: 'PrivateServerLogAsyncRecord', value: JSON.stringify({ value: { recentTimeStamp: '', result: '' } }) });
             }
             const resUpdateGameServerType = yield this.serverConfigService.updateServerConfig({ name: 'GameServerType', value: JSON.stringify({ value: body.GameServerType }) });
             const resUpdateServerId = yield this.serverConfigService.updateServerConfig({ name: 'ServerId', value: JSON.stringify({ value: body.ServerId }) });
@@ -291,6 +335,8 @@ let ServerConfigAdminSysController = class ServerConfigAdminSysController {
             const resUpdateGGHostFTPAccount = yield this.serverConfigService.updateServerConfig({ name: 'GGHostFTPAccount', value: JSON.stringify({ value: body.GGHostFTPAccount }) });
             const resUpdateGGHostFTPPassword = yield this.serverConfigService.updateServerConfig({ name: 'GGHostFTPPassword', value: JSON.stringify({ value: body.GGHostFTPPassword }) });
             const resUpdateGGHostLogsRollbackInterval = yield this.serverConfigService.updateServerConfig({ name: 'GGHostLogsRollbackInterval', value: JSON.stringify({ value: body.GGHostLogsRollbackInterval }) });
+            const resUpdatePrivateBaseFolderPath = yield this.serverConfigService.updateServerConfig({ name: 'PrivateBaseFolderPath', value: JSON.stringify({ value: body.PrivateBaseFolderPath }) });
+            const resUpdatePrivateLogsRollbackInterval = yield this.serverConfigService.updateServerConfig({ name: 'PrivateLogsRollbackInterval', value: JSON.stringify({ value: body.PrivateLogsRollbackInterval }) });
             const resUpdateBattleMetricServerId = yield this.serverConfigService.updateServerConfig({ name: 'BattleMetricServerId', value: JSON.stringify({ value: body.BattleMetricServerId }) });
             const resUpdateGameMapBorderInfo = yield this.serverConfigService.updateServerConfig({ name: 'GameMapBorderInfo', value: JSON.stringify({ value: body.GameMapBorderInfo }) });
             const resUpdateGameMapImageUrl = yield this.serverConfigService.updateServerConfig({ name: 'GameMapImageUrl', value: JSON.stringify({ value: body.GameMapImageUrl }) });
@@ -309,6 +355,9 @@ let ServerConfigAdminSysController = class ServerConfigAdminSysController {
             const resUpdateEnableGGHostLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnableGGHostLogsRollback', value: JSON.stringify({ value: body.EnableGGHostLogsRollback }) });
             const resUpdateGGHostLogsRollbackSingleTimeout = yield this.serverConfigService.updateServerConfig({ name: 'GGHostLogsRollbackSingleTimeout', value: JSON.stringify({ value: body.GGHostLogsRollbackSingleTimeout }) });
             const resUpdateGGHostLogsRollbackInterval = yield this.serverConfigService.updateServerConfig({ name: 'GGHostLogsRollbackInterval', value: JSON.stringify({ value: body.GGHostLogsRollbackInterval }) });
+            const resUpdateEnablePrivateLogsRollback = yield this.serverConfigService.updateServerConfig({ name: 'EnablePrivateLogsRollback', value: JSON.stringify({ value: body.EnablePrivateLogsRollback }) });
+            const resUpdatePrivateLogsRollbackSingleTimeout = yield this.serverConfigService.updateServerConfig({ name: 'PrivateLogsRollbackSingleTimeout', value: JSON.stringify({ value: body.PrivateLogsRollbackSingleTimeout }) });
+            const resUpdatePrivateLogsRollbackInterval = yield this.serverConfigService.updateServerConfig({ name: 'PrivateLogsRollbackInterval', value: JSON.stringify({ value: body.PrivateLogsRollbackInterval }) });
             const resUpdateGameAreaRanges = yield this.serverConfigService.updateServerConfig({ name: 'GameAreaRanges', value: JSON.stringify({ value: body.GameAreaRanges }) });
             const resUpdateSteamAPIToken = yield this.serverConfigService.updateServerConfig({ name: 'SteamAPIToken', value: JSON.stringify({ value: body.SteamAPIToken }) });
             return res.json((0, response_builder_1.responseBuilder)(response_builder_1.ResponseStatusCode.OK, {}));
@@ -349,6 +398,9 @@ let ServerConfigAdminSysController = class ServerConfigAdminSysController {
             }
             else if (GameServerType === 'NITRADO') {
                 server_schedules_nitrado_server_log_queue_service_1.ServerSchedulesNitradoServerLogQueueService.updateFlag = true;
+            }
+            else if (GameServerType === 'PRIVATE') {
+                server_schedules_private_server_log_queue_service_1.ServerSchedulesPrivateServerLogQueueService.updateFlag = true;
             }
             else {
                 return res.json((0, response_builder_1.responseBuilder)(response_builder_1.ResponseStatusCode.INTERNAL_ERROR, {}, '还没选择服务器类型'));

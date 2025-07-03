@@ -1,1 +1,0 @@
-//# sourceMappingURL=mines-record.service.js.map

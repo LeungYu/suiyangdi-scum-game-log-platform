@@ -6,6 +6,7 @@ export declare function logGPortalProccessOtherLog(print: boolean, ...contents: 
 export declare function logNitradoProccessLog(print: boolean, ...contents: any[]): Promise<void>;
 export declare function logGGHostProccessLog(print: boolean, ...contents: any[]): Promise<void>;
 export declare function logGGHostProccessOtherLog(print: boolean, ...contents: any[]): Promise<void>;
+export declare function logPrivateProccessLog(print: boolean, ...contents: any[]): Promise<void>;
 export declare function logServerKill2LoginLog(print: boolean, ...contents: any[]): Promise<void>;
 export declare function logServerAdmin2ChatLogLog(print: boolean, ...contents: any[]): Promise<void>;
 export declare function logServerActions2ViolationsLogLog(print: boolean, ...contents: any[]): Promise<void>;

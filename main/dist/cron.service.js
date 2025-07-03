@@ -95,6 +95,14 @@ let CronService = CronService_1 = class CronService extends nest_schedule_1.Nest
                         gGHostFTPPassword,
                     };
                 }
+                else if (gameServerType === 'PRIVATE') {
+                    const resPrivateBaseFolderPath = yield serverConfigService.getServerConfig({ name: 'PrivateBaseFolderPath' });
+                    const privateBaseFolderPath = resPrivateBaseFolderPath && resPrivateBaseFolderPath.id ? JSON.parse(resPrivateBaseFolderPath.value).value : null;
+                    serverInfo = {
+                        gameServerType,
+                        privateBaseFolderPath,
+                    };
+                }
                 const sysInfo = yield si.get({
                     cpu: 'manufacturer, brand, cores, physicalCores, speed',
                     mem: 'total, free',

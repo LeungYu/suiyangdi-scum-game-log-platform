@@ -1,1 +1,0 @@
-//# sourceMappingURL=mines-record.entity.js.map
