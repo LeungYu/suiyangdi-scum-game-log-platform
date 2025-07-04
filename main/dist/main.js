@@ -51,6 +51,12 @@ function bootstrap() {
         }
         const path = require('path');
         app.use('/admin', express.static(path.resolve(__dirname, '../admin')));
+        app.use('/', (req, res, next) => {
+            if (req.path === '/') {
+                return res.redirect('/admin');
+            }
+            next();
+        });
         app.use(session({
             store: redisStore_1.default,
             secret: config_1.Config.getConf('SESSION_SECRET'),
