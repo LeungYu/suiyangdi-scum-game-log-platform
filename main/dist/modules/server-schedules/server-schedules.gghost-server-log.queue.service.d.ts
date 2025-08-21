@@ -6,6 +6,9 @@ import { ChatMessageService } from "../chat-message/chat-message.service";
 import { ActionsRecordService } from "../actions-record/actions-record.service";
 import { ViolationsRecordService } from "../violations-record/violations-record.service";
 import { EconomyService } from "../economy/economy.service";
+import { ChestOwnershipRecordService } from "../chest-ownership-record/chest-ownership-record.service";
+import { VehicleDestructionRecordService } from "../vehicle-destruction-record/vehicle-destruction-record.service";
+import { UnrecognizedRecordService } from "../unrecognized-record/unrecognized-record.service";
 export declare enum ServerLogTaskType {
     GET_GGHOST_SERVER_LOG = 0
 }
@@ -25,7 +28,10 @@ export declare class ServerSchedulesGGHostServerLogQueueService {
     private readonly actionsRecordService;
     private readonly violationsRecordService;
     private readonly economyService;
-    constructor(serverConfigService: ServerConfigService, userLoginService: UserLoginService, killService: KillService, adminCommandService: AdminCommandService, chatMessageService: ChatMessageService, actionsRecordService: ActionsRecordService, violationsRecordService: ViolationsRecordService, economyService: EconomyService);
+    private readonly chestOwnershipRecordService;
+    private readonly vehicleDestructionRecordService;
+    private readonly unrecognizedRecordService;
+    constructor(serverConfigService: ServerConfigService, userLoginService: UserLoginService, killService: KillService, adminCommandService: AdminCommandService, chatMessageService: ChatMessageService, actionsRecordService: ActionsRecordService, violationsRecordService: ViolationsRecordService, economyService: EconomyService, chestOwnershipRecordService: ChestOwnershipRecordService, vehicleDestructionRecordService: VehicleDestructionRecordService, unrecognizedRecordService: UnrecognizedRecordService);
     static updateFlag: any;
     static ggHostLogsInstance: any;
     add(task: GGHostServerLogJobProps, opts?: JobOpts): Promise<void>;
@@ -59,13 +65,19 @@ export declare class ServerSchedulesGGHostServerLogQueueService {
     proccessAdminLog(adminLog: any): Promise<unknown>;
     proccessChatLogs(chatLogFileNames: any): Promise<unknown>;
     proccessChatLog(chatLog: any): Promise<unknown>;
-    proccessActions2ViolationsLogs(actionsLogFileNames: any, violationsLogFileNames: any, economyLogFileNames: any): Promise<unknown>;
+    proccessActions2ViolationsLogs(actionsLogFileNames: any, violationsLogFileNames: any, economyLogFileNames: any, allChestOwnershipLogFileNames: any, allVehicleDestructionLogFileNames: any): Promise<unknown>;
     proccessActionsLogs(actionsLogFileNames: any): Promise<unknown>;
     proccessActionsLog(actionsLog: any): Promise<unknown>;
     proccessViolationsLogs(violationsLogFileNames: any): Promise<unknown>;
     proccessViolationsLog(violationsLog: any): Promise<unknown>;
     proccessEconomyLogs(economyLogFileNames: any): Promise<unknown>;
     proccessEconomyLog(economyLog: any): Promise<unknown>;
+    proccessChestOwnershipLogs(chestOwnershipLogFileNames: any): Promise<unknown>;
+    proccessChestOwnershipLog(chestOwnershipLog: any): Promise<unknown>;
+    proccessVehicleDestructionLogs(vehicleDestructionLogFileNames: any): Promise<unknown>;
+    proccessVehicleDestructionLog(vehicleDestructionLog: any): Promise<unknown>;
+    processUnrecognizedLogs(rawUnrecognizedLogs: any): Promise<unknown>;
+    proccessUnrecognizedLog(unrecognizedLog: any): Promise<unknown>;
     proccessServerStatus(): Promise<unknown>;
 }
 export {};

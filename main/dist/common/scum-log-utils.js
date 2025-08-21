@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tranferEconomyRecords = exports.tranferRawEconomyRecordsToBlocks = exports.tranferViolationsRecordLog = exports.tranferActionRecordLog = exports.tranferChatMessageLog = exports.tranferAdminCommandLog = exports.tranferLoginLog = exports.tranferKillLog = exports.isLaterThanLegalDaysAgo = void 0;
+exports.tranferVehicleDestructionRecordLog = exports.tranferChestOwnershipRecordLog = exports.tranferEconomyRecords = exports.tranferRawEconomyRecordsToBlocks = exports.tranferViolationsRecordLog = exports.tranferActionRecordLog = exports.tranferChatMessageLog = exports.tranferAdminCommandLog = exports.tranferLoginLog = exports.tranferKillLog = exports.isLaterThanLegalDaysAgo = void 0;
 const moment = require("moment");
 const configs_1 = require("../utils/configs");
 const isLaterThanLegalDaysAgo = (rawText) => {
@@ -11,7 +11,9 @@ const isLaterThanLegalDaysAgo = (rawText) => {
     return timeStamp >= ThreeDayAgoTimeStamp;
 };
 exports.isLaterThanLegalDaysAgo = isLaterThanLegalDaysAgo;
+const universalTimestampLogRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): ([\s|\S]*)/;
 const tranferKillLog = (rawText, GameAreaRanges) => {
+    var _a, _b, _c, _d;
     const spliter = rawText.split(': ');
     if (spliter && spliter[1] && spliter[1].indexOf('{') === 0) {
         const BeJsonfied = rawText.substring(spliter[0].length + 2);
@@ -43,16 +45,35 @@ const tranferKillLog = (rawText, GameAreaRanges) => {
                     weapon,
                     distance,
                     isEventKill,
-                    occuredTimeStamp
+                    occuredTimeStamp,
+                    rawText
                 };
             }
         }
         catch (e) {
-            return undefined;
+            const isMatchUniversalTimestampLog = universalTimestampLogRegExp.test(rawText);
+            if (isMatchUniversalTimestampLog) {
+                const [originalText, YYYY, MM, DD, HH, mm, ss, others] = universalTimestampLogRegExp.exec(rawText);
+                const createdTimeStamp = (moment(`${YYYY}.${MM}.${DD}-${HH}.${mm}.${ss}`, 'YYYY.MM.DD-HH.mm.ss').valueOf() + 1000 * 60 * 60 * 8) + '';
+                return ((_a = rawText === null || rawText === void 0 ? void 0 : rawText.trim()) === null || _a === void 0 ? void 0 : _a.length) && !rawText.includes('Game version') && !rawText.includes('Game version') ? { unrecognized: true, rawText, createdTimeStamp } : undefined;
+            }
+            else {
+                const createdTimeStamp = Date.now() + '';
+                return ((_b = rawText === null || rawText === void 0 ? void 0 : rawText.trim()) === null || _b === void 0 ? void 0 : _b.length) && !rawText.includes('Game version') ? { unrecognized: true, rawText, createdTimeStamp } : undefined;
+            }
         }
     }
     else {
-        return undefined;
+        const isMatchUniversalTimestampLog = universalTimestampLogRegExp.test(rawText);
+        if (isMatchUniversalTimestampLog) {
+            const [originalText, YYYY, MM, DD, HH, mm, ss, others] = universalTimestampLogRegExp.exec(rawText);
+            const createdTimeStamp = (moment(`${YYYY}.${MM}.${DD}-${HH}.${mm}.${ss}`, 'YYYY.MM.DD-HH.mm.ss').valueOf() + 1000 * 60 * 60 * 8) + '';
+            return ((_c = rawText === null || rawText === void 0 ? void 0 : rawText.trim()) === null || _c === void 0 ? void 0 : _c.length) && !rawText.includes('Game version') ? { unrecognized: true, rawText, createdTimeStamp } : undefined;
+        }
+        else {
+            const createdTimeStamp = Date.now() + '';
+            return ((_d = rawText === null || rawText === void 0 ? void 0 : rawText.trim()) === null || _d === void 0 ? void 0 : _d.length) && !rawText.includes('Game version') ? { unrecognized: true, rawText, createdTimeStamp } : undefined;
+        }
     }
 };
 exports.tranferKillLog = tranferKillLog;
@@ -61,6 +82,7 @@ const droneLoginRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \
 const illegalDroneLoginRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \'([\s|\S]*) (\d{17}):([\s|\S]*)\((\d*)\)\' attempted to log in as drone, but had no admin privileges/;
 const normalLogoutRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \'([\s|\S]*) (\d{17}):([\s|\S]*)\((\d*)\)\' logged out at: (X=([\d|\-|\.]*) Y=([\d|\-|\.]*) Z=([\d|\-|\.]*)|\?)/;
 const tranferLoginLog = (rawText, GameAreaRanges) => {
+    var _a, _b;
     const isMatchNormalLogin = normalLoginRegExp.test(rawText);
     const isMatchDroneLogin = droneLoginRegExp.test(rawText);
     const isMatchIllegalDroneLogin = illegalDroneLoginRegExp.test(rawText);
@@ -81,10 +103,19 @@ const tranferLoginLog = (rawText, GameAreaRanges) => {
         }
         otherConfig.asDrone = isMatchDroneLogin || isMatchIllegalDroneLogin;
         otherConfig.illegalDrone = isMatchIllegalDroneLogin;
-        return { logType: 'login', status: isMatchNormalLogout ? 'logout' : 'login', scumId, steamId, sessionId, loginIp, otherConfig, createdTimeStamp };
+        return { logType: 'login', status: isMatchNormalLogout ? 'logout' : 'login', scumId, steamId, sessionId, loginIp, otherConfig, createdTimeStamp, rawText };
     }
     else {
-        return undefined;
+        const isMatchUniversalTimestampLog = universalTimestampLogRegExp.test(rawText);
+        if (isMatchUniversalTimestampLog) {
+            const [originalText, YYYY, MM, DD, HH, mm, ss, others] = universalTimestampLogRegExp.exec(rawText);
+            const createdTimeStamp = (moment(`${YYYY}.${MM}.${DD}-${HH}.${mm}.${ss}`, 'YYYY.MM.DD-HH.mm.ss').valueOf() + 1000 * 60 * 60 * 8) + '';
+            return ((_a = rawText === null || rawText === void 0 ? void 0 : rawText.trim()) === null || _a === void 0 ? void 0 : _a.length) && !rawText.includes('Game version') ? { unrecognized: true, rawText, createdTimeStamp } : undefined;
+        }
+        else {
+            const createdTimeStamp = Date.now() + '';
+            return ((_b = rawText === null || rawText === void 0 ? void 0 : rawText.trim()) === null || _b === void 0 ? void 0 : _b.length) && !rawText.includes('Game version') ? { unrecognized: true, rawText, createdTimeStamp } : undefined;
+        }
     }
 };
 exports.tranferLoginLog = tranferLoginLog;
@@ -95,6 +126,7 @@ const mapClickTeleportToVehicleAdminCommandRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(
 const targetTeleportToAdminCommandRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \'(\d{17}):([\s|\S]*)\((\d*)\)\' Target of TeleportTo: \'(\d{17}):([\s|\S]*)\((\d*)\)\' Location: (X=([\d|\-|\.]*) Y=([\d|\-|\.]*) Z=([\d|\-|\.]*)|\?)/;
 const updateCustomZonesAdminCommandRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): Custom Zones updated by \{([\s|\S]*) \((\d*), (\d{17})\)\}/;
 const tranferAdminCommandLog = (rawText, GameAreaRanges) => {
+    var _a, _b;
     const isMatchNormalAdminCommand = normalAdminCommandRegExp.test(rawText);
     const isMatchIllegalDroneAdminCommand = illegalDroneAdminCommandRegExp.test(rawText);
     const isMatchMapClickTeleportToPlayerAdminCommand = mapClickTeleportToPlayerAdminCommandRegExp.test(rawText);
@@ -120,7 +152,7 @@ const tranferAdminCommandLog = (rawText, GameAreaRanges) => {
             locations = `${X},${Y},${Z}`;
             area = (0, configs_1.getAreaByLocationsArray)(GameAreaRanges, X, Y);
         }
-        return { scumId, steamId, sessionId, content: `在地图上点击玩家(steam ID: ${toSteamId} 玩家角色名称: '${toScumId}'[${toSessionId}])并传送到他身边 目标位置: X=${X} Y=${Y} Z=${Z}`, otherConfig: { locations, area }, sendTimeStamp };
+        return { scumId, steamId, sessionId, content: `在地图上点击玩家(steam ID: ${toSteamId} 玩家角色名称: '${toScumId}'[${toSessionId}])并传送到他身边 目标位置: X=${X} Y=${Y} Z=${Z}`, otherConfig: { locations, area }, sendTimeStamp, rawText };
     }
     else if (isMatchMapClickTeleportToVehicleAdminCommand) {
         const [originalText, YYYY, MM, DD, HH, mm, ss, steamId, scumId, sessionId, toVehicleType, originalLocationText, X, Y, Z] = mapClickTeleportToVehicleAdminCommandRegExp.exec(rawText);
@@ -131,7 +163,7 @@ const tranferAdminCommandLog = (rawText, GameAreaRanges) => {
             locations = `${X},${Y},${Z}`;
             area = (0, configs_1.getAreaByLocationsArray)(GameAreaRanges, X, Y);
         }
-        return { scumId, steamId, sessionId, content: `在地图上点击载具(类型: ${toVehicleType})并传送到它身边 目标位置: X=${X} Y=${Y} Z=${Z}`, otherConfig: { locations, area }, sendTimeStamp };
+        return { scumId, steamId, sessionId, content: `在地图上点击载具(类型: ${toVehicleType})并传送到它身边 目标位置: X=${X} Y=${Y} Z=${Z}`, otherConfig: { locations, area }, sendTimeStamp, rawText };
     }
     else if (isMatchTargetTeleportToAdminCommand) {
         const [originalText, YYYY, MM, DD, HH, mm, ss, steamId, scumId, sessionId, toSteamId, toScumId, toSessionId, originalLocationText, X, Y, Z] = targetTeleportToAdminCommandRegExp.exec(rawText);
@@ -142,28 +174,39 @@ const tranferAdminCommandLog = (rawText, GameAreaRanges) => {
             locations = `${X},${Y},${Z}`;
             area = (0, configs_1.getAreaByLocationsArray)(GameAreaRanges, X, Y);
         }
-        return { scumId, steamId, sessionId, content: `传送到玩家(steam ID: ${toSteamId} 玩家角色名称: '${toScumId}'[${toSessionId}])身边 目标位置: X=${X} Y=${Y} Z=${Z}`, otherConfig: { locations, area }, sendTimeStamp };
+        return { scumId, steamId, sessionId, content: `传送到玩家(steam ID: ${toSteamId} 玩家角色名称: '${toScumId}'[${toSessionId}])身边 目标位置: X=${X} Y=${Y} Z=${Z}`, otherConfig: { locations, area }, sendTimeStamp, rawText };
     }
     else if (isMatchUpdateCustomZonesAdminCommand) {
         const [originalText, YYYY, MM, DD, HH, mm, ss, scumId, sessionId, steamId] = updateCustomZonesAdminCommandRegExp.exec(rawText);
         const sendTimeStamp = (moment(`${YYYY}.${MM}.${DD}-${HH}.${mm}.${ss}`, 'YYYY.MM.DD-HH.mm.ss').valueOf() + 1000 * 60 * 60 * 8) + '';
-        return { scumId, steamId, sessionId, content: `更新地图圈`, sendTimeStamp };
+        return { scumId, steamId, sessionId, content: `更新地图圈`, sendTimeStamp, rawText };
     }
     else {
-        return undefined;
+        const isMatchUniversalTimestampLog = universalTimestampLogRegExp.test(rawText);
+        if (isMatchUniversalTimestampLog) {
+            const [originalText, YYYY, MM, DD, HH, mm, ss, others] = universalTimestampLogRegExp.exec(rawText);
+            const createdTimeStamp = (moment(`${YYYY}.${MM}.${DD}-${HH}.${mm}.${ss}`, 'YYYY.MM.DD-HH.mm.ss').valueOf() + 1000 * 60 * 60 * 8) + '';
+            return ((_a = rawText === null || rawText === void 0 ? void 0 : rawText.trim()) === null || _a === void 0 ? void 0 : _a.length) && !rawText.includes('Game version') ? { unrecognized: true, rawText, createdTimeStamp } : undefined;
+        }
+        else {
+            const createdTimeStamp = Date.now() + '';
+            return ((_b = rawText === null || rawText === void 0 ? void 0 : rawText.trim()) === null || _b === void 0 ? void 0 : _b.length) && !rawText.includes('Game version') ? { unrecognized: true, rawText, createdTimeStamp } : undefined;
+        }
     }
 };
 exports.tranferAdminCommandLog = tranferAdminCommandLog;
 const normalChatMessageRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \'(\d{17}):([\s|\S]*)\((\d*)\)\' \'(Global|Squad|Local|Admin): ([\s|\S]*)\'/;
 const tranferChatMessageLog = (rawText) => {
+    var _a;
     const isMatchNormalChatMessage = normalChatMessageRegExp.test(rawText);
     if (isMatchNormalChatMessage) {
         const [originalText, YYYY, MM, DD, HH, mm, ss, steamId, scumId, sessionId, type, content] = normalChatMessageRegExp.exec(rawText);
         const sendTimeStamp = (moment(`${YYYY}.${MM}.${DD}-${HH}.${mm}.${ss}`, 'YYYY.MM.DD-HH.mm.ss').valueOf() + 1000 * 60 * 60 * 8) + '';
-        return { scumId, steamId, sessionId, type, content, sendTimeStamp };
+        return { scumId, steamId, sessionId, type, content, sendTimeStamp, rawText };
     }
     else {
-        return undefined;
+        const createdTimeStamp = Date.now() + '';
+        return ((_a = rawText === null || rawText === void 0 ? void 0 : rawText.trim()) === null || _a === void 0 ? void 0 : _a.length) && !rawText.includes('Game version') ? { unrecognized: true, rawText, createdTimeStamp } : undefined;
     }
 };
 exports.tranferChatMessageLog = tranferChatMessageLog;
@@ -197,6 +240,7 @@ const isSpecialUserInfo = (rawUserInfo) => {
     }
 };
 const tranferActionRecordLog = (rawText, GameAreaRanges) => {
+    var _a, _b, _c, _d;
     const isMatchNormalMineLog = normalMineLogRegExp.test(rawText);
     const isMatchTriggeredMineLog = triggeredMineLogRegExp.test(rawText);
     const isMatchTriggeredWithoutOwnerMineLog = triggeredWithoutOwnerMineLogRegExp.test(rawText);
@@ -214,6 +258,16 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
     const isMatchUnburyChestLogRegExp = unburyChestLogRegExp.test(rawText);
     if (!(isMatchNormalMineLog || isMatchTriggeredMineLog || isMatchTriggeredWithoutOwnerMineLog || isMatchOvertakeStartedLog || isMatchCreatedFlagLog || isMatchDestroyedFlagLog || isMatchOvertakeCanceledLog || isMatchOvertakeAbandonedLog || isMatchOvertakeOvertakenLog || isMatchMiniGameLockpickLog || isMatchMiniGameBombDefusalWithoutLockTypeLog || isMatchMiniGameBombDefusalWithLockTypeLog || isMatchMiniGameBankATMLogRegExp || isMatchBuryChestLogRegExp || isMatchUnburyChestLogRegExp)) {
         console.log("[UNKNOWN] ", rawText);
+        const isMatchUniversalTimestampLog = universalTimestampLogRegExp.test(rawText);
+        if (isMatchUniversalTimestampLog) {
+            const [originalText, YYYY, MM, DD, HH, mm, ss, others] = universalTimestampLogRegExp.exec(rawText);
+            const createdTimeStamp = (moment(`${YYYY}.${MM}.${DD}-${HH}.${mm}.${ss}`, 'YYYY.MM.DD-HH.mm.ss').valueOf() + 1000 * 60 * 60 * 8) + '';
+            return ((_a = rawText === null || rawText === void 0 ? void 0 : rawText.trim()) === null || _a === void 0 ? void 0 : _a.length) && !rawText.includes('Game version') ? { unrecognized: true, rawText, createdTimeStamp } : undefined;
+        }
+        else {
+            const createdTimeStamp = Date.now() + '';
+            return ((_b = rawText === null || rawText === void 0 ? void 0 : rawText.trim()) === null || _b === void 0 ? void 0 : _b.length) && !rawText.includes('Game version') ? { unrecognized: true, rawText, createdTimeStamp } : undefined;
+        }
     }
     if (isMatchNormalMineLog) {
         const [originalText, YYYY, MM, DD, HH, mm, ss, action, userOriginalText, scumId, sessionId, steamId, targetName, X, Y, Z] = normalMineLogRegExp.exec(rawText);
@@ -225,7 +279,7 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
             createdArea = (0, configs_1.getAreaByLocationsArray)(GameAreaRanges, X, Y);
         }
         return {
-            scumId, steamId, sessionId, type: 'trap', createdLocations, createdArea, createdTimeStamp, targetName,
+            scumId, steamId, sessionId, type: 'trap', createdLocations, createdArea, createdTimeStamp, targetName, rawText,
             otherConfig: { action: action.toLowerCase() }
         };
     }
@@ -242,7 +296,7 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
         const isSpecialOwner = isSpecialUserInfo(ownerUserOriginalText);
         return {
             scumId: isSpecialUser === false ? scumId : isSpecialUser, steamId: isSpecialUser === false ? steamId : '', sessionId: isSpecialUser === false ? sessionId : '',
-            type: 'trap', createdLocations, createdArea, createdTimeStamp, targetName,
+            type: 'trap', createdLocations, createdArea, createdTimeStamp, targetName, rawText,
             otherConfig: {
                 action: action.toLowerCase(),
                 owner: { scumId: isSpecialOwner === false ? ownerScumId : isSpecialOwner, steamId: isSpecialOwner === false ? ownerSteamId : '', sessionId: isSpecialOwner === false ? ownerSessionId : '' }
@@ -261,7 +315,7 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
         const isSpecialUser = isSpecialUserInfo(userOriginalText);
         return {
             scumId: isSpecialUser === false ? scumId : isSpecialUser, steamId: isSpecialUser === false ? steamId : '', sessionId: isSpecialUser === false ? sessionId : '',
-            type: 'trap', createdLocations, createdArea, createdTimeStamp, targetName,
+            type: 'trap', createdLocations, createdArea, createdTimeStamp, targetName, rawText,
             otherConfig: {
                 action: action.toLowerCase()
             }
@@ -279,7 +333,7 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
         const isSpecialOwner = isSpecialUserInfo(ownerUserOriginalText);
         return {
             scumId: isSpecialOwner === false ? ownerScumId : isSpecialOwner, steamId: isSpecialOwner === false ? ownerSteamId : '', sessionId: isSpecialOwner === false ? ownerSessionId : '',
-            type: 'flag', createdLocations: flagLocations, createdArea: flagArea, createdTimeStamp, targetName: 'flag',
+            type: 'flag', createdLocations: flagLocations, createdArea: flagArea, createdTimeStamp, targetName: 'flag', rawText,
             otherConfig: {
                 action: 'createdFlag',
                 owner: { scumId: isSpecialOwner === false ? ownerScumId : isSpecialOwner, steamId: isSpecialOwner === false ? ownerSteamId : '', sessionId: isSpecialOwner === false ? ownerSessionId : '' },
@@ -299,7 +353,7 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
         const isSpecialOwner = isSpecialUserInfo(ownerUserOriginalText);
         return {
             scumId: isSpecialOwner === false ? ownerScumId : isSpecialOwner, steamId: isSpecialOwner === false ? ownerSteamId : '', sessionId: isSpecialOwner === false ? ownerSessionId : '',
-            type: 'flag', createdLocations: flagLocations, createdArea: flagArea, createdTimeStamp, targetName: 'flag',
+            type: 'flag', createdLocations: flagLocations, createdArea: flagArea, createdTimeStamp, targetName: 'flag', rawText,
             otherConfig: {
                 action: 'destroyedFlag',
                 owner: { scumId: isSpecialOwner === false ? ownerScumId : isSpecialOwner, steamId: isSpecialOwner === false ? ownerSteamId : '', sessionId: isSpecialOwner === false ? ownerSessionId : '' },
@@ -326,7 +380,7 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
         const isSpecialOwner = isSpecialUserInfo(ownerUserOriginalText);
         return {
             scumId: isSpecialUser === false ? scumId : isSpecialUser, steamId: isSpecialUser === false ? steamId : '', sessionId: isSpecialUser === false ? sessionId : '',
-            type: 'baseBuildingTake', createdLocations, createdArea, createdTimeStamp, targetName: 'flag',
+            type: 'baseBuildingTake', createdLocations, createdArea, createdTimeStamp, targetName: 'flag', rawText,
             otherConfig: {
                 action: 'overtakeStarted',
                 owner: { scumId: isSpecialOwner === false ? ownerScumId : isSpecialOwner, steamId: isSpecialOwner === false ? ownerSteamId : '', sessionId: isSpecialOwner === false ? ownerSessionId : '' },
@@ -347,7 +401,7 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
         const isSpecialOwner = isSpecialUserInfo(ownerUserOriginalText);
         return {
             scumId: isSpecialUser === false ? scumId : isSpecialUser, steamId: isSpecialUser === false ? steamId : '', sessionId: isSpecialUser === false ? sessionId : '',
-            type: 'baseBuildingTake', createdLocations, createdArea, createdTimeStamp, targetName: 'flag',
+            type: 'baseBuildingTake', createdLocations, createdArea, createdTimeStamp, targetName: 'flag', rawText,
             otherConfig: {
                 action: 'overtakeCanceled',
                 owner: { scumId: isSpecialOwner === false ? ownerScumId : isSpecialOwner, steamId: isSpecialOwner === false ? ownerSteamId : '', sessionId: isSpecialOwner === false ? ownerSessionId : '' },
@@ -368,7 +422,7 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
         const isSpecialOwner = isSpecialUserInfo(ownerUserOriginalText);
         return {
             scumId: isSpecialUser === false ? scumId : isSpecialUser, steamId: isSpecialUser === false ? steamId : '', sessionId: isSpecialUser === false ? sessionId : '',
-            type: 'baseBuildingTake', createdLocations, createdArea, createdTimeStamp, targetName: 'flag',
+            type: 'baseBuildingTake', createdLocations, createdArea, createdTimeStamp, targetName: 'flag', rawText,
             otherConfig: {
                 action: 'overtakeAbandoned',
                 owner: { scumId: isSpecialOwner === false ? ownerScumId : isSpecialOwner, steamId: isSpecialOwner === false ? ownerSteamId : '', sessionId: isSpecialOwner === false ? ownerSessionId : '' },
@@ -389,7 +443,7 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
         const isSpecialOldOwner = isSpecialUserInfo(oldOwnerUserOriginalText);
         return {
             scumId: isSpecialNewOwner === false ? newOwnerScumId : isSpecialNewOwner, steamId: isSpecialNewOwner === false ? newOwnerSteamId : '', sessionId: isSpecialNewOwner === false ? newOwnerSessionId : '',
-            type: 'baseBuildingChange', createdLocations, createdArea, createdTimeStamp, targetName: 'flag',
+            type: 'baseBuildingChange', createdLocations, createdArea, createdTimeStamp, targetName: 'flag', rawText,
             otherConfig: {
                 action: rawAction === 'Overtaken' ? 'overtaken' : 'overtakenOther',
                 owner: { scumId: isSpecialOldOwner === false ? oldOwnerScumId : isSpecialOldOwner, steamId: isSpecialOldOwner === false ? oldOwnerSteamId : '', sessionId: isSpecialOldOwner === false ? oldOwnerSessionId : '' },
@@ -410,7 +464,7 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
         const isSpecialOwner = isSpecialUserInfo(ownerUserOriginalText);
         return {
             scumId: isSpecialUser === false ? scumId : isSpecialUser, steamId: isSpecialUser === false ? steamId : '', sessionId: isSpecialUser === false ? sessionId : '',
-            type: 'lockPick', createdLocations, createdArea, createdTimeStamp, targetName,
+            type: 'lockPick', createdLocations, createdArea, createdTimeStamp, targetName, rawText,
             otherConfig: {
                 owner: { scumId: isSpecialOwner === false ? ownerScumId : isSpecialOwner, steamId: isSpecialOwner === false ? ownerSteamId : '', sessionId: isSpecialOwner === false ? ownerSessionId : '' },
                 success: success === 'Yes', elapsedTime, failedAttempts, lockType: lockType.toLowerCase()
@@ -430,7 +484,7 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
         const isSpecialOwner = isSpecialUserInfo(ownerUserOriginalText);
         return {
             scumId: isSpecialUser === false ? scumId : isSpecialUser, steamId: isSpecialUser === false ? steamId : '', sessionId: isSpecialUser === false ? sessionId : '',
-            type: 'defusal', createdLocations, createdArea, createdTimeStamp, targetName,
+            type: 'defusal', createdLocations, createdArea, createdTimeStamp, targetName, rawText,
             otherConfig: {
                 owner: { scumId: isSpecialOwner === false ? ownerScumId : isSpecialOwner, steamId: isSpecialOwner === false ? ownerSteamId : '', sessionId: isSpecialOwner === false ? ownerSessionId : '' },
                 success: success === 'Yes', elapsedTime, failedAttempts
@@ -450,7 +504,7 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
         const isSpecialOwner = isSpecialUserInfo(ownerUserOriginalText);
         return {
             scumId: isSpecialUser === false ? scumId : isSpecialUser, steamId: isSpecialUser === false ? steamId : '', sessionId: isSpecialUser === false ? sessionId : '',
-            type: 'defusal', createdLocations, createdArea, createdTimeStamp, targetName,
+            type: 'defusal', createdLocations, createdArea, createdTimeStamp, targetName, rawText,
             otherConfig: {
                 owner: { scumId: isSpecialOwner === false ? ownerScumId : isSpecialOwner, steamId: isSpecialOwner === false ? ownerSteamId : '', sessionId: isSpecialOwner === false ? ownerSessionId : '' },
                 success: success === 'Yes', elapsedTime, failedAttempts, lockType: lockType.toLowerCase()
@@ -463,7 +517,7 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
         const isSpecialUser = isSpecialUserInfo(userOriginalText);
         return {
             scumId: isSpecialUser === false ? scumId : isSpecialUser, steamId: isSpecialUser === false ? steamId : '', sessionId: isSpecialUser === false ? sessionId : '',
-            type: 'bankAtm', createdLocations: 'none', createdArea: 'none', createdTimeStamp,
+            type: 'bankAtm', createdLocations: 'none', createdArea: 'none', createdTimeStamp, rawText,
             otherConfig: {
                 success, elapsedTime, failedAttempts
             }
@@ -482,7 +536,7 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
         const isSpecialOwner = isSpecialUserInfo(ownerUserOriginalText);
         return {
             scumId: isSpecialUser === false ? scumId : isSpecialUser, steamId: isSpecialUser === false ? steamId : '', sessionId: isSpecialUser === false ? sessionId : '',
-            type: 'chest', createdLocations: chestLocations, createdArea: chestArea, createdTimeStamp, targetName: 'chest',
+            type: 'chest', createdLocations: chestLocations, createdArea: chestArea, createdTimeStamp, targetName: 'chest', rawText,
             otherConfig: {
                 action: 'bury',
                 owner: { scumId: isSpecialOwner === false ? ownerScumId : isSpecialOwner, steamId: isSpecialOwner === false ? ownerSteamId : '', sessionId: isSpecialOwner === false ? ownerSessionId : '' },
@@ -503,7 +557,7 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
         const isSpecialOwner = isSpecialUserInfo(ownerUserOriginalText);
         return {
             scumId: isSpecialUser === false ? scumId : isSpecialUser, steamId: isSpecialUser === false ? steamId : '', sessionId: isSpecialUser === false ? sessionId : '',
-            type: 'chest', createdLocations: chestLocations, createdArea: chestArea, createdTimeStamp, targetName: 'chest',
+            type: 'chest', createdLocations: chestLocations, createdArea: chestArea, createdTimeStamp, targetName: 'chest', rawText,
             otherConfig: {
                 action: 'unbury',
                 owner: { scumId: isSpecialOwner === false ? ownerScumId : isSpecialOwner, steamId: isSpecialOwner === false ? ownerSteamId : '', sessionId: isSpecialOwner === false ? ownerSessionId : '' },
@@ -512,7 +566,16 @@ const tranferActionRecordLog = (rawText, GameAreaRanges) => {
         };
     }
     else {
-        return undefined;
+        const isMatchUniversalTimestampLog = universalTimestampLogRegExp.test(rawText);
+        if (isMatchUniversalTimestampLog) {
+            const [originalText, YYYY, MM, DD, HH, mm, ss, others] = universalTimestampLogRegExp.exec(rawText);
+            const createdTimeStamp = (moment(`${YYYY}.${MM}.${DD}-${HH}.${mm}.${ss}`, 'YYYY.MM.DD-HH.mm.ss').valueOf() + 1000 * 60 * 60 * 8) + '';
+            return ((_c = rawText === null || rawText === void 0 ? void 0 : rawText.trim()) === null || _c === void 0 ? void 0 : _c.length) && !rawText.includes('Game version') ? { unrecognized: true, rawText, createdTimeStamp } : undefined;
+        }
+        else {
+            const createdTimeStamp = Date.now() + '';
+            return ((_d = rawText === null || rawText === void 0 ? void 0 : rawText.trim()) === null || _d === void 0 ? void 0 : _d.length) && !rawText.includes('Game version') ? { unrecognized: true, rawText, createdTimeStamp } : undefined;
+        }
     }
 };
 exports.tranferActionRecordLog = tranferActionRecordLog;
@@ -709,6 +772,7 @@ const tranferRawEconomyRecordsToBlocks = (rawLog) => {
 };
 exports.tranferRawEconomyRecordsToBlocks = tranferRawEconomyRecordsToBlocks;
 const tranferEconomyRecords = (block, GameAreaRanges) => {
+    var _a, _b, _c, _d, _e, _f;
     if (block.length === 1) {
         const isMatchChangeName = changeNameRegExp.test(block[0]);
         const isMatchBankPurchase = bankPurchaseRegExp.test(block[0]);
@@ -872,7 +936,16 @@ const tranferEconomyRecords = (block, GameAreaRanges) => {
         }
         else {
             console.log("[UNKNOWN] ", block[0]);
-            return undefined;
+            const isMatchUniversalTimestampLog = universalTimestampLogRegExp.test(block[0]);
+            if (isMatchUniversalTimestampLog) {
+                const [originalText, YYYY, MM, DD, HH, mm, ss, others] = universalTimestampLogRegExp.exec(block[0]);
+                const createdTimeStamp = (moment(`${YYYY}.${MM}.${DD}-${HH}.${mm}.${ss}`, 'YYYY.MM.DD-HH.mm.ss').valueOf() + 1000 * 60 * 60 * 8) + '';
+                return ((_b = (_a = block[0]) === null || _a === void 0 ? void 0 : _a.trim()) === null || _b === void 0 ? void 0 : _b.length) && !block[0].includes('Game version') ? { unrecognized: true, rawText: block[0], createdTimeStamp } : undefined;
+            }
+            else {
+                const createdTimeStamp = Date.now() + '';
+                return ((_d = (_c = block[0]) === null || _c === void 0 ? void 0 : _c.trim()) === null || _d === void 0 ? void 0 : _d.length) && !block[0].includes('Game version') ? { unrecognized: true, rawText: block[0], createdTimeStamp } : undefined;
+            }
         }
     }
     else {
@@ -941,9 +1014,95 @@ const tranferEconomyRecords = (block, GameAreaRanges) => {
             };
         }
         else {
-            return undefined;
+            const targetRawText = block.length ? block.join('') : '';
+            const isMatchUniversalTimestampLog = universalTimestampLogRegExp.test(targetRawText);
+            if (isMatchUniversalTimestampLog) {
+                const [originalText, YYYY, MM, DD, HH, mm, ss, others] = universalTimestampLogRegExp.exec(targetRawText);
+                const createdTimeStamp = (moment(`${YYYY}.${MM}.${DD}-${HH}.${mm}.${ss}`, 'YYYY.MM.DD-HH.mm.ss').valueOf() + 1000 * 60 * 60 * 8) + '';
+                return ((_e = targetRawText === null || targetRawText === void 0 ? void 0 : targetRawText.trim()) === null || _e === void 0 ? void 0 : _e.length) && !targetRawText.includes('Game version') ? { unrecognized: true, rawText: targetRawText, createdTimeStamp } : undefined;
+            }
+            else {
+                const createdTimeStamp = Date.now() + '';
+                return ((_f = targetRawText === null || targetRawText === void 0 ? void 0 : targetRawText.trim()) === null || _f === void 0 ? void 0 : _f.length) && !targetRawText.includes('Game version') ? { unrecognized: true, rawText: targetRawText, createdTimeStamp } : undefined;
+            }
         }
     }
 };
 exports.tranferEconomyRecords = tranferEconomyRecords;
+const normaChestOwnershipRecordRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): Chest \(entity id: ([\s|\S]*)\) ownership changed: \[(\d{17})\] ([\s|\S]*) -> \[(\d{17})\] ([\s|\S]*)/;
+const noFromlChestOwnershipRecordRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): Chest \(entity id: ([\s|\S]*)\) ownership changed:  -> \[(\d{17})\] ([\s|\S]*)/;
+const chestOwnershipClaimedRecordRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): Chest \(entity id: ([\s|\S]*)\) ownership claimed\. Owner: ((\d{17})\s?\((\d*), ([\s|\S]*)\)|N\/A|-1\(\)|0\([\s|\S]*\))\. Location: X=([\s|\S]*) Y=([\s|\S]*) Z=([\s|\S]*)/;
+const tranferChestOwnershipRecordLog = (rawText, GameAreaRanges) => {
+    var _a, _b;
+    const isMatchNormalChestOwnershipRecord = normaChestOwnershipRecordRegExp.test(rawText);
+    const isMatchNoSfromChestOwnershipRecord = noFromlChestOwnershipRecordRegExp.test(rawText);
+    const isMatchChestOwnershipClaimedRecordRegExp = chestOwnershipClaimedRecordRegExp.test(rawText);
+    if (isMatchNormalChestOwnershipRecord) {
+        const [originalText, YYYY, MM, DD, HH, mm, ss, chestId, fromSteamId, fromScumId, toSteamId, toScumId] = normaChestOwnershipRecordRegExp.exec(rawText);
+        const createdTimeStamp = (moment(`${YYYY}.${MM}.${DD}-${HH}.${mm}.${ss}`, 'YYYY.MM.DD-HH.mm.ss').valueOf() + 1000 * 60 * 60 * 8) + '';
+        return { chestId, fromSteamId, fromScumId, toSteamId, toScumId, createdTimeStamp, rawText };
+    }
+    else if (isMatchNoSfromChestOwnershipRecord) {
+        const [originalText, YYYY, MM, DD, HH, mm, ss, chestId, toSteamId, toScumId] = noFromlChestOwnershipRecordRegExp.exec(rawText);
+        const createdTimeStamp = (moment(`${YYYY}.${MM}.${DD}-${HH}.${mm}.${ss}`, 'YYYY.MM.DD-HH.mm.ss').valueOf() + 1000 * 60 * 60 * 8) + '';
+        return { chestId, toSteamId, toScumId, createdTimeStamp, rawText };
+    }
+    else if (isMatchChestOwnershipClaimedRecordRegExp) {
+        const [originalText, YYYY, MM, DD, HH, mm, ss, chestId, toText, toSteamId, toSessionId, toScumId, X, Y, Z] = chestOwnershipClaimedRecordRegExp.exec(rawText);
+        const isSpecialUser = isSpecialUserInfo(toText);
+        const createdTimeStamp = (moment(`${YYYY}.${MM}.${DD}-${HH}.${mm}.${ss}`, 'YYYY.MM.DD-HH.mm.ss').valueOf() + 1000 * 60 * 60 * 8) + '';
+        let locations = undefined;
+        let area = undefined;
+        if (X !== undefined && Y !== undefined && Z !== undefined) {
+            locations = `${X},${Y},${Z}`;
+            area = (0, configs_1.getAreaByLocationsArray)(GameAreaRanges, X, Y);
+        }
+        return { chestId, toSteamId: isSpecialUser === false ? toSteamId : '', toSessionId: isSpecialUser === false ? toSessionId : '', toScumId: isSpecialUser === false ? toScumId : '', locations, area, createdTimeStamp, rawText };
+    }
+    else {
+        const isMatchUniversalTimestampLog = universalTimestampLogRegExp.test(rawText);
+        if (isMatchUniversalTimestampLog) {
+            const [originalText, YYYY, MM, DD, HH, mm, ss, others] = universalTimestampLogRegExp.exec(rawText);
+            const createdTimeStamp = (moment(`${YYYY}.${MM}.${DD}-${HH}.${mm}.${ss}`, 'YYYY.MM.DD-HH.mm.ss').valueOf() + 1000 * 60 * 60 * 8) + '';
+            return ((_a = rawText === null || rawText === void 0 ? void 0 : rawText.trim()) === null || _a === void 0 ? void 0 : _a.length) && !rawText.includes('Game version') ? { unrecognized: true, rawText, createdTimeStamp } : undefined;
+        }
+        else {
+            const createdTimeStamp = Date.now() + '';
+            return ((_b = rawText === null || rawText === void 0 ? void 0 : rawText.trim()) === null || _b === void 0 ? void 0 : _b.length) && !rawText.includes('Game version') ? { unrecognized: true, rawText, createdTimeStamp } : undefined;
+        }
+    }
+};
+exports.tranferChestOwnershipRecordLog = tranferChestOwnershipRecordLog;
+const vehicleDestructionRecordRegExp = /(\d{4})\.(\d{2})\.(\d{2})-(\d{2})\.(\d{2})\.(\d{2}): \[(Disappeared|Destroyed)\] ([\s|\S]*)\. VehicleId: ([\s|\S]*)\. Owner: ((\d{17})\s?\((\d*), ([\s|\S]*)\)|N\/A|-1\(\)|0\([\s|\S]*\))\. Location: X=([\s|\S]*) Y=([\s|\S]*) Z=([\s|\S]*)/;
+const tranferVehicleDestructionRecordLog = (rawText, GameAreaRanges) => {
+    var _a, _b;
+    const isMatchVehicleDestructionRecordRegExp = vehicleDestructionRecordRegExp.test(rawText);
+    if (isMatchVehicleDestructionRecordRegExp) {
+        const [originalText, YYYY, MM, DD, HH, mm, ss, actionType, vehicleType, vehicleId, ownerText, ownerSteamId, ownerSessionId, ownerScumId, X, Y, Z] = vehicleDestructionRecordRegExp.exec(rawText);
+        const isSpecialUser = isSpecialUserInfo(ownerText);
+        const createdTimeStamp = (moment(`${YYYY}.${MM}.${DD}-${HH}.${mm}.${ss}`, 'YYYY.MM.DD-HH.mm.ss').valueOf() + 1000 * 60 * 60 * 8) + '';
+        let locations = undefined;
+        let area = undefined;
+        if (X !== undefined && Y !== undefined && Z !== undefined) {
+            locations = `${X},${Y},${Z}`;
+            area = (0, configs_1.getAreaByLocationsArray)(GameAreaRanges, X, Y);
+        }
+        return {
+            actionType, vehicleType, vehicleId, ownerSteamId: isSpecialUser === false ? ownerSteamId : '', ownerSessionId: isSpecialUser === false ? ownerSessionId : '', ownerScumId: isSpecialUser === false ? ownerScumId : isSpecialUser, locations, area, createdTimeStamp, rawText
+        };
+    }
+    else {
+        const isMatchUniversalTimestampLog = universalTimestampLogRegExp.test(rawText);
+        if (isMatchUniversalTimestampLog) {
+            const [originalText, YYYY, MM, DD, HH, mm, ss, others] = universalTimestampLogRegExp.exec(rawText);
+            const createdTimeStamp = (moment(`${YYYY}.${MM}.${DD}-${HH}.${mm}.${ss}`, 'YYYY.MM.DD-HH.mm.ss').valueOf() + 1000 * 60 * 60 * 8) + '';
+            return ((_a = rawText === null || rawText === void 0 ? void 0 : rawText.trim()) === null || _a === void 0 ? void 0 : _a.length) && !rawText.includes('Game version') ? { unrecognized: true, rawText, createdTimeStamp } : undefined;
+        }
+        else {
+            const createdTimeStamp = Date.now() + '';
+            return ((_b = rawText === null || rawText === void 0 ? void 0 : rawText.trim()) === null || _b === void 0 ? void 0 : _b.length) && !rawText.includes('Game version') ? { unrecognized: true, rawText, createdTimeStamp } : undefined;
+        }
+    }
+};
+exports.tranferVehicleDestructionRecordLog = tranferVehicleDestructionRecordLog;
 //# sourceMappingURL=scum-log-utils.js.map

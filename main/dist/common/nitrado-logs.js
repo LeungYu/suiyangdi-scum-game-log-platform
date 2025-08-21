@@ -514,6 +514,134 @@ class NitradoLogs {
             }
         }));
     }
+    getChestOwnershipLog(GameAreaRanges, fileName) {
+        return new Promise((resolveAll, rejectRequestLog) => __awaiter(this, void 0, void 0, function* () {
+            (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[process]fetch chest ownership log${fileName}`);
+            (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `-------------------- url--------------------`);
+            let downloadUrl;
+            try {
+                const resGetGameserverInfo = yield this.generateNormalRequest('GET', `https://api.nitrado.net/services/${this.serverId}/gameservers/file_server/download`, this.generateHeaders(), { file: fileName }, undefined, morgan_log_1.logServerActions2ViolationsLogLog);
+                downloadUrl = resGetGameserverInfo.data.token.url;
+            }
+            catch (e) {
+                const errorDesc = `[error] url: ${e.toString()}`;
+                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);
+                rejectRequestLog({ status: false, message: errorDesc });
+                return;
+            }
+            let strContent;
+            try {
+                const resGetFiles = yield this.generateDownloadRequest('GET', `${downloadUrl}`, {}, undefined, undefined, morgan_log_1.logServerActions2ViolationsLogLog);
+                const stream = require('stream');
+                const logFileBufferStream = new stream.PassThrough();
+                let logFileBuffer = Buffer.from('', 'utf16le');
+                yield resGetFiles.pipe(logFileBufferStream);
+                let size = 0;
+                logFileBufferStream.on("data", (data) => {
+                    size += data.length;
+                    logFileBuffer = Buffer.concat([logFileBuffer, data], size);
+                });
+                logFileBufferStream.on("end", () => {
+                    strContent = logFileBuffer.toString('utf16le');
+                    try {
+                        (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[process]process with chest ownership log`);
+                        const rawLog = strContent;
+                        const logs = rawLog
+                            .split('\n')
+                            .map((T) => {
+                            try {
+                                return (0, scum_log_utils_1.tranferChestOwnershipRecordLog)(T, GameAreaRanges);
+                            }
+                            catch (e) {
+                                const errorDesc = '[error][process]process with chest ownership log' + e.toString();
+                                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);
+                                return undefined;
+                            }
+                        })
+                            .filter((T, key) => T !== undefined);
+                        resolveAll(logs);
+                        return;
+                    }
+                    catch (e) {
+                        const errorDesc = '[error][process]process with chest ownership log' + e.toString();
+                        (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);
+                        rejectRequestLog({ status: false, message: errorDesc });
+                        return;
+                    }
+                });
+            }
+            catch (e) {
+                const errorDesc = `[error][process]${e.toString()}`;
+                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);
+                rejectRequestLog({ status: false, message: errorDesc });
+                return;
+            }
+        }));
+    }
+    getVehicleDestructionLog(GameAreaRanges, fileName) {
+        return new Promise((resolveAll, rejectRequestLog) => __awaiter(this, void 0, void 0, function* () {
+            (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[process]fetch vehicle destruction log${fileName}`);
+            (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `-------------------- url--------------------`);
+            let downloadUrl;
+            try {
+                const resGetGameserverInfo = yield this.generateNormalRequest('GET', `https://api.nitrado.net/services/${this.serverId}/gameservers/file_server/download`, this.generateHeaders(), { file: fileName }, undefined, morgan_log_1.logServerActions2ViolationsLogLog);
+                downloadUrl = resGetGameserverInfo.data.token.url;
+            }
+            catch (e) {
+                const errorDesc = `[error] url: ${e.toString()}`;
+                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);
+                rejectRequestLog({ status: false, message: errorDesc });
+                return;
+            }
+            let strContent;
+            try {
+                const resGetFiles = yield this.generateDownloadRequest('GET', `${downloadUrl}`, {}, undefined, undefined, morgan_log_1.logServerActions2ViolationsLogLog);
+                const stream = require('stream');
+                const logFileBufferStream = new stream.PassThrough();
+                let logFileBuffer = Buffer.from('', 'utf16le');
+                yield resGetFiles.pipe(logFileBufferStream);
+                let size = 0;
+                logFileBufferStream.on("data", (data) => {
+                    size += data.length;
+                    logFileBuffer = Buffer.concat([logFileBuffer, data], size);
+                });
+                logFileBufferStream.on("end", () => {
+                    strContent = logFileBuffer.toString('utf16le');
+                    try {
+                        (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[process]process with vehicle destruction log`);
+                        const rawLog = strContent;
+                        const logs = rawLog
+                            .split('\n')
+                            .map((T) => {
+                            try {
+                                return (0, scum_log_utils_1.tranferVehicleDestructionRecordLog)(T, GameAreaRanges);
+                            }
+                            catch (e) {
+                                const errorDesc = '[error][process]process with vehicle destruction log' + e.toString();
+                                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);
+                                return undefined;
+                            }
+                        })
+                            .filter((T, key) => T !== undefined);
+                        resolveAll(logs);
+                        return;
+                    }
+                    catch (e) {
+                        const errorDesc = '[error][process]process with vehicle destruction log' + e.toString();
+                        (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);
+                        rejectRequestLog({ status: false, message: errorDesc });
+                        return;
+                    }
+                });
+            }
+            catch (e) {
+                const errorDesc = `[error][process]${e.toString()}`;
+                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);
+                rejectRequestLog({ status: false, message: errorDesc });
+                return;
+            }
+        }));
+    }
     getServerStatus(battleMetricServerId) {
         return new Promise((resolve, rejectRequestStatus) => __awaiter(this, void 0, void 0, function* () {
             var _a, _b, _c, _d;

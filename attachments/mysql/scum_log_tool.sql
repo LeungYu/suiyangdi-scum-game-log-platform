@@ -32,6 +32,7 @@ CREATE TABLE `actions_record` (
   `targetName` varchar(50) COLLATE utf8mb4_bin DEFAULT NULL,
   `otherConfig` json DEFAULT NULL,
   `type` varchar(30) COLLATE utf8mb4_bin NOT NULL,
+  `rawText` text COLLATE utf8mb4_bin,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
@@ -47,6 +48,7 @@ CREATE TABLE `admin_command` (
   `content` text COLLATE utf8mb4_bin NOT NULL,
   `sendTimeStamp` varchar(13) COLLATE utf8mb4_bin NOT NULL,
   `otherConfig` json DEFAULT NULL,
+  `rawText` text COLLATE utf8mb4_bin,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
@@ -62,7 +64,23 @@ CREATE TABLE `chat_message` (
   `type` varchar(10) COLLATE utf8mb4_bin NOT NULL,
   `content` text COLLATE utf8mb4_bin NOT NULL,
   `sendTimeStamp` varchar(13) COLLATE utf8mb4_bin NOT NULL,
+  `rawText` text COLLATE utf8mb4_bin,
   PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+-- Table structure for chest_ownership_record
+-- ----------------------------
+CREATE TABLE `chest_ownership_record` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `fromScumId` varchar(50) COLLATE utf8mb4_bin DEFAULT NULL,
+  `fromSteamId` varchar(17) COLLATE utf8mb4_bin DEFAULT NULL,
+  `toScumId` varchar(50) COLLATE utf8mb4_bin DEFAULT NULL,
+  `toSteamId` varchar(17) COLLATE utf8mb4_bin DEFAULT NULL,
+  `chestId` varchar(10) COLLATE utf8mb4_bin NOT NULL,
+  `createdTimeStamp` varchar(13) COLLATE utf8mb4_bin NOT NULL,
+  `rawText` text COLLATE utf8mb4_bin,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -77,6 +95,7 @@ CREATE TABLE `economy` (
   `createdTimeStamp` varchar(13) COLLATE utf8mb4_bin NOT NULL,
   `otherConfig` json DEFAULT NULL,
   `trader` varchar(30) COLLATE utf8mb4_bin DEFAULT NULL,
+  `rawText` text COLLATE utf8mb4_bin,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
@@ -98,6 +117,7 @@ CREATE TABLE `kill` (
   `killerSteamId` varchar(17) COLLATE utf8mb4_bin NOT NULL,
   `victimSteamId` varchar(17) COLLATE utf8mb4_bin NOT NULL,
   `occuredTimeStamp` varchar(13) COLLATE utf8mb4_bin NOT NULL,
+  `rawText` text COLLATE utf8mb4_bin,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
@@ -162,6 +182,17 @@ INSERT INTO `server_config` VALUES (190, '{\"value\":1000}', 0, '1611587843813',
 COMMIT;
 
 -- ----------------------------
+-- Table structure for unrecognized_record
+-- ----------------------------
+CREATE TABLE `unrecognized_record` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `fileName` varchar(50) COLLATE utf8mb4_bin DEFAULT NULL,
+  `rawText` text COLLATE utf8mb4_bin,
+  `createdTimeStamp` varchar(13) COLLATE utf8mb4_bin NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
 -- Table structure for user_login
 -- ----------------------------
 DROP TABLE IF EXISTS `user_login`;
@@ -175,7 +206,26 @@ CREATE TABLE `user_login` (
   `loginTimeStamp` varchar(13) COLLATE utf8mb4_bin DEFAULT NULL,
   `logoutTimeStamp` varchar(13) COLLATE utf8mb4_bin DEFAULT NULL,
   `otherConfig` json DEFAULT NULL,
+  `rawText` text COLLATE utf8mb4_bin,
   PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+-- Table structure for vehicle_destruction_record
+-- ----------------------------
+CREATE TABLE `vehicle_destruction_record` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ownerScumId` varchar(50) COLLATE utf8mb4_bin DEFAULT NULL,
+  `ownerSteamId` varchar(17) COLLATE utf8mb4_bin DEFAULT NULL,
+  `ownerSessionId` varchar(17) COLLATE utf8mb4_bin DEFAULT NULL,
+  `actionType` varchar(20) COLLATE utf8mb4_bin DEFAULT NULL,
+  `vehicleType` varchar(50) COLLATE utf8mb4_bin DEFAULT NULL,
+  `vehicleId` varchar(10) COLLATE utf8mb4_bin DEFAULT NULL,
+  `locations` varchar(60) COLLATE utf8mb4_bin NOT NULL,
+  `area` varchar(15) COLLATE utf8mb4_bin NOT NULL,
+  `createdTimeStamp` varchar(13) COLLATE utf8mb4_bin NOT NULL,
+  `rawText` text COLLATE utf8mb4_bin,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
@@ -190,6 +240,7 @@ CREATE TABLE `violations_record` (
   `count` int(11) NOT NULL DEFAULT '1',
   `tag` varchar(150) COLLATE utf8mb4_bin DEFAULT NULL,
   `otherConfig` json DEFAULT NULL,
+  `rawText` text COLLATE utf8mb4_bin,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 

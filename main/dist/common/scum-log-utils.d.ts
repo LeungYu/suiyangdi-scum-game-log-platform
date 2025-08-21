@@ -13,6 +13,26 @@ export declare const tranferKillLog: (rawText: string, GameAreaRanges: any) => {
     distance: number;
     isEventKill: any;
     occuredTimeStamp: string;
+    rawText: string;
+    unrecognized?: undefined;
+    createdTimeStamp?: undefined;
+} | {
+    unrecognized: boolean;
+    rawText: string;
+    createdTimeStamp: string;
+    logType?: undefined;
+    killerSteamId?: undefined;
+    killerName?: undefined;
+    killerLocations?: undefined;
+    killerArea?: undefined;
+    victimSteamId?: undefined;
+    victimName?: undefined;
+    victimLocations?: undefined;
+    victimArea?: undefined;
+    weapon?: undefined;
+    distance?: undefined;
+    isEventKill?: undefined;
+    occuredTimeStamp?: undefined;
 };
 export declare const tranferLoginLog: (rawText: string, GameAreaRanges: any) => {
     logType: string;
@@ -23,6 +43,19 @@ export declare const tranferLoginLog: (rawText: string, GameAreaRanges: any) => 
     loginIp: string;
     otherConfig: any;
     createdTimeStamp: string;
+    rawText: string;
+    unrecognized?: undefined;
+} | {
+    unrecognized: boolean;
+    rawText: string;
+    createdTimeStamp: string;
+    logType?: undefined;
+    status?: undefined;
+    scumId?: undefined;
+    steamId?: undefined;
+    sessionId?: undefined;
+    loginIp?: undefined;
+    otherConfig?: undefined;
 };
 export declare const tranferAdminCommandLog: (rawText: string, GameAreaRanges: any) => {
     scumId: string;
@@ -31,6 +64,9 @@ export declare const tranferAdminCommandLog: (rawText: string, GameAreaRanges: a
     content: string;
     sendTimeStamp: string;
     otherConfig?: undefined;
+    rawText?: undefined;
+    unrecognized?: undefined;
+    createdTimeStamp?: undefined;
 } | {
     scumId: string;
     steamId: string;
@@ -41,6 +77,29 @@ export declare const tranferAdminCommandLog: (rawText: string, GameAreaRanges: a
         area: any;
     };
     sendTimeStamp: string;
+    rawText: string;
+    unrecognized?: undefined;
+    createdTimeStamp?: undefined;
+} | {
+    scumId: string;
+    steamId: string;
+    sessionId: string;
+    content: string;
+    sendTimeStamp: string;
+    rawText: string;
+    otherConfig?: undefined;
+    unrecognized?: undefined;
+    createdTimeStamp?: undefined;
+} | {
+    unrecognized: boolean;
+    rawText: string;
+    createdTimeStamp: string;
+    scumId?: undefined;
+    steamId?: undefined;
+    sessionId?: undefined;
+    content?: undefined;
+    sendTimeStamp?: undefined;
+    otherConfig?: undefined;
 };
 export declare const tranferChatMessageLog: (rawText: string) => {
     scumId: string;
@@ -49,8 +108,33 @@ export declare const tranferChatMessageLog: (rawText: string) => {
     type: string;
     content: string;
     sendTimeStamp: string;
+    rawText: string;
+    unrecognized?: undefined;
+    createdTimeStamp?: undefined;
+} | {
+    unrecognized: boolean;
+    rawText: string;
+    createdTimeStamp: string;
+    scumId?: undefined;
+    steamId?: undefined;
+    sessionId?: undefined;
+    type?: undefined;
+    content?: undefined;
+    sendTimeStamp?: undefined;
 };
 export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: any) => {
+    unrecognized: boolean;
+    rawText: string;
+    createdTimeStamp: string;
+    scumId?: undefined;
+    steamId?: undefined;
+    sessionId?: undefined;
+    type?: undefined;
+    createdLocations?: undefined;
+    createdArea?: undefined;
+    targetName?: undefined;
+    otherConfig?: undefined;
+} | {
     scumId: string;
     steamId: string;
     sessionId: string;
@@ -59,6 +143,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
     createdArea: any;
     createdTimeStamp: string;
     targetName: string;
+    rawText: string;
     otherConfig: {
         action: string;
         owner?: undefined;
@@ -69,6 +154,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
         lockType?: undefined;
         chest?: undefined;
     };
+    unrecognized?: undefined;
 } | {
     scumId: string;
     steamId: string;
@@ -78,6 +164,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
     createdArea: any;
     createdTimeStamp: string;
     targetName: string;
+    rawText: string;
     otherConfig: {
         action: string;
         owner: {
@@ -92,6 +179,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
         lockType?: undefined;
         chest?: undefined;
     };
+    unrecognized?: undefined;
 } | {
     scumId: string;
     steamId: string;
@@ -101,6 +189,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
     createdArea: any;
     createdTimeStamp: string;
     targetName: string;
+    rawText: string;
     otherConfig: {
         action: string;
         owner: {
@@ -119,6 +208,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
         lockType?: undefined;
         chest?: undefined;
     };
+    unrecognized?: undefined;
 } | {
     scumId: string;
     steamId: string;
@@ -128,6 +218,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
     createdArea: any;
     createdTimeStamp: string;
     targetName: string;
+    rawText: string;
     otherConfig: {
         action: string;
         owner: {
@@ -146,6 +237,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
         lockType?: undefined;
         chest?: undefined;
     };
+    unrecognized?: undefined;
 } | {
     scumId: string;
     steamId: string;
@@ -155,6 +247,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
     createdArea: any;
     createdTimeStamp: string;
     targetName: string;
+    rawText: string;
     otherConfig: {
         owner: {
             scumId: string;
@@ -169,6 +262,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
         flag?: undefined;
         chest?: undefined;
     };
+    unrecognized?: undefined;
 } | {
     scumId: string;
     steamId: string;
@@ -178,6 +272,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
     createdArea: any;
     createdTimeStamp: string;
     targetName: string;
+    rawText: string;
     otherConfig: {
         owner: {
             scumId: string;
@@ -192,6 +287,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
         lockType?: undefined;
         chest?: undefined;
     };
+    unrecognized?: undefined;
 } | {
     scumId: string;
     steamId: string;
@@ -200,6 +296,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
     createdLocations: string;
     createdArea: string;
     createdTimeStamp: string;
+    rawText: string;
     otherConfig: {
         success: string;
         elapsedTime: string;
@@ -210,6 +307,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
         lockType?: undefined;
         chest?: undefined;
     };
+    unrecognized?: undefined;
     targetName?: undefined;
 } | {
     scumId: string;
@@ -220,6 +318,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
     createdArea: any;
     createdTimeStamp: string;
     targetName: string;
+    rawText: string;
     otherConfig: {
         action: string;
         owner: {
@@ -238,6 +337,7 @@ export declare const tranferActionRecordLog: (rawText: string, GameAreaRanges: a
         failedAttempts?: undefined;
         lockType?: undefined;
     };
+    unrecognized?: undefined;
 };
 export declare const tranferViolationsRecordLog: (rawText: string, GameAreaRanges: any) => {
     tag: string;
@@ -331,6 +431,8 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
         detailsTotal?: undefined;
         details?: undefined;
     };
+    unrecognized?: undefined;
+    rawText?: undefined;
     trader?: undefined;
 } | {
     scumId: string;
@@ -357,6 +459,8 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
         details?: undefined;
     };
     sessionId?: undefined;
+    unrecognized?: undefined;
+    rawText?: undefined;
     trader?: undefined;
 } | {
     scumId: string;
@@ -383,6 +487,8 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
         details?: undefined;
     };
     sessionId?: undefined;
+    unrecognized?: undefined;
+    rawText?: undefined;
     trader?: undefined;
 } | {
     scumId: string;
@@ -418,6 +524,8 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
         details?: undefined;
     };
     sessionId?: undefined;
+    unrecognized?: undefined;
+    rawText?: undefined;
     trader?: undefined;
 } | {
     scumId: string;
@@ -453,6 +561,8 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
         details?: undefined;
     };
     sessionId?: undefined;
+    unrecognized?: undefined;
+    rawText?: undefined;
     trader?: undefined;
 } | {
     scumId: string;
@@ -483,6 +593,8 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
         details?: undefined;
     };
     sessionId?: undefined;
+    unrecognized?: undefined;
+    rawText?: undefined;
     trader?: undefined;
 } | {
     scumId: string;
@@ -523,6 +635,18 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
         details?: undefined;
     };
     sessionId?: undefined;
+    unrecognized?: undefined;
+    rawText?: undefined;
+    trader?: undefined;
+} | {
+    unrecognized: boolean;
+    rawText: string;
+    createdTimeStamp: string;
+    scumId?: undefined;
+    sessionId?: undefined;
+    steamId?: undefined;
+    type?: undefined;
+    otherConfig?: undefined;
     trader?: undefined;
 } | {
     scumId: string;
@@ -556,4 +680,80 @@ export declare const tranferEconomyRecords: (block: string[], GameAreaRanges: an
         transferInfo?: undefined;
     };
     sessionId?: undefined;
+    unrecognized?: undefined;
+    rawText?: undefined;
+};
+export declare const tranferChestOwnershipRecordLog: (rawText: string, GameAreaRanges: any) => {
+    chestId: string;
+    fromSteamId: string;
+    fromScumId: string;
+    toSteamId: string;
+    toScumId: string;
+    createdTimeStamp: string;
+    rawText: string;
+    toSessionId?: undefined;
+    locations?: undefined;
+    area?: undefined;
+    unrecognized?: undefined;
+} | {
+    chestId: string;
+    toSteamId: string;
+    toScumId: string;
+    createdTimeStamp: string;
+    rawText: string;
+    fromSteamId?: undefined;
+    fromScumId?: undefined;
+    toSessionId?: undefined;
+    locations?: undefined;
+    area?: undefined;
+    unrecognized?: undefined;
+} | {
+    chestId: string;
+    toSteamId: string;
+    toSessionId: string;
+    toScumId: string;
+    locations: any;
+    area: any;
+    createdTimeStamp: string;
+    rawText: string;
+    fromSteamId?: undefined;
+    fromScumId?: undefined;
+    unrecognized?: undefined;
+} | {
+    unrecognized: boolean;
+    rawText: string;
+    createdTimeStamp: string;
+    chestId?: undefined;
+    fromSteamId?: undefined;
+    fromScumId?: undefined;
+    toSteamId?: undefined;
+    toScumId?: undefined;
+    toSessionId?: undefined;
+    locations?: undefined;
+    area?: undefined;
+};
+export declare const tranferVehicleDestructionRecordLog: (rawText: string, GameAreaRanges: any) => {
+    actionType: string;
+    vehicleType: string;
+    vehicleId: string;
+    ownerSteamId: string;
+    ownerSessionId: string;
+    ownerScumId: string;
+    locations: any;
+    area: any;
+    createdTimeStamp: string;
+    rawText: string;
+    unrecognized?: undefined;
+} | {
+    unrecognized: boolean;
+    rawText: string;
+    createdTimeStamp: string;
+    actionType?: undefined;
+    vehicleType?: undefined;
+    vehicleId?: undefined;
+    ownerSteamId?: undefined;
+    ownerSessionId?: undefined;
+    ownerScumId?: undefined;
+    locations?: undefined;
+    area?: undefined;
 };

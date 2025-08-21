@@ -354,6 +354,96 @@ class PrivateLogs {
             }));
         });
     }
+    getChestOwnershipLog(GameAreaRanges, fileName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolveAll, rejectRequestLog) => __awaiter(this, void 0, void 0, function* () {
+                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[process]fetch chest ownership log ${fileName} FROM LOCAL FILE`);
+                try {
+                    const path = require('path');
+                    const fs = require('fs');
+                    (0, morgan_log_1.logPrivateProccessLog)(true, '[process]fetch chest ownership log');
+                    const fullPath = path.join(this.baseFolderPath, fileName);
+                    const strContent = fs.readFileSync(fullPath, 'utf16le');
+                    try {
+                        (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[process]process with chest ownership log`);
+                        const logs = strContent
+                            .split('\n')
+                            .filter((T, key) => T && T.length && key > 1)
+                            .map((T) => {
+                            try {
+                                return (0, scum_log_utils_1.tranferChestOwnershipRecordLog)(T, GameAreaRanges);
+                            }
+                            catch (e) {
+                                const errorDesc = '[error][process]process with chest ownership log' + e.toString();
+                                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);
+                                return undefined;
+                            }
+                        })
+                            .filter((T, key) => T !== undefined);
+                        (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[done]fetch chest ownership file`);
+                        resolveAll(logs);
+                    }
+                    catch (e) {
+                        const errorDesc = '[error][process]process with chest ownership log' + e.toString();
+                        (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);
+                        rejectRequestLog({ status: false, message: errorDesc });
+                        return;
+                    }
+                }
+                catch (e) {
+                    const errorDesc = '[error][read local chest ownership log]' + e.toString();
+                    (0, morgan_log_1.logPrivateProccessLog)(true, errorDesc);
+                    rejectRequestLog({ status: false, message: errorDesc });
+                    return;
+                }
+            }));
+        });
+    }
+    getVehicleDestructionLog(GameAreaRanges, fileName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolveAll, rejectRequestLog) => __awaiter(this, void 0, void 0, function* () {
+                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[process]fetch chest vehicle destruction log ${fileName} FROM LOCAL FILE`);
+                try {
+                    const path = require('path');
+                    const fs = require('fs');
+                    (0, morgan_log_1.logPrivateProccessLog)(true, '[process]fetch vehicle destruction log');
+                    const fullPath = path.join(this.baseFolderPath, fileName);
+                    const strContent = fs.readFileSync(fullPath, 'utf16le');
+                    try {
+                        (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[process]process with vehicle destruction log`);
+                        const logs = strContent
+                            .split('\n')
+                            .filter((T, key) => T && T.length && key > 1)
+                            .map((T) => {
+                            try {
+                                return (0, scum_log_utils_1.tranferVehicleDestructionRecordLog)(T, GameAreaRanges);
+                            }
+                            catch (e) {
+                                const errorDesc = '[error][process]process with vehicle destruction log' + e.toString();
+                                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);
+                                return undefined;
+                            }
+                        })
+                            .filter((T, key) => T !== undefined);
+                        (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[done]fetch vehicle destruction file`);
+                        resolveAll(logs);
+                    }
+                    catch (e) {
+                        const errorDesc = '[error][process]process with vehicle destruction log' + e.toString();
+                        (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);
+                        rejectRequestLog({ status: false, message: errorDesc });
+                        return;
+                    }
+                }
+                catch (e) {
+                    const errorDesc = '[error][read local vehicle destruction log]' + e.toString();
+                    (0, morgan_log_1.logPrivateProccessLog)(true, errorDesc);
+                    rejectRequestLog({ status: false, message: errorDesc });
+                    return;
+                }
+            }));
+        });
+    }
     getServerStatus(battleMetricServerId) {
         return new Promise((resolve, rejectRequestStatus) => __awaiter(this, void 0, void 0, function* () {
             var _a, _b, _c, _d;

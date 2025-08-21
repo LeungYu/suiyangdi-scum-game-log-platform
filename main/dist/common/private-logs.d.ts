@@ -10,6 +10,8 @@ declare class PrivateLogs {
     getActionsLog(GameAreaRanges: any, fileName: string): Promise<unknown>;
     getViolationsLog(GameAreaRanges: any, fileName: string): Promise<unknown>;
     getEconomyLog(GameAreaRanges: any, fileName: string): Promise<unknown>;
+    getChestOwnershipLog(GameAreaRanges: any, fileName: string): Promise<unknown>;
+    getVehicleDestructionLog(GameAreaRanges: any, fileName: string): Promise<unknown>;
     getServerStatus(battleMetricServerId: any): Promise<unknown>;
 }
 export default PrivateLogs;

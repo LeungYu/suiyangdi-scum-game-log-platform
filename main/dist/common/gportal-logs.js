@@ -341,7 +341,7 @@ class GPortalLogs {
                     }));
                 }
                 catch (e) {
-                    const errorDesc = '[error]process with kill log' + e.toString();
+                    const errorDesc = '[error]process with login log' + e.toString();
                     (0, morgan_log_1.logGPortalProccessLog)(true, errorDesc);
                     rejectRequestLog({ status: false, message: errorDesc });
                     return;
@@ -438,7 +438,7 @@ class GPortalLogs {
                     }));
                 }
                 catch (e) {
-                    const errorDesc = '[error]process with kill log' + e.toString();
+                    const errorDesc = '[error]process with admin log' + e.toString();
                     (0, morgan_log_1.logGPortalProccessLog)(true, errorDesc);
                     rejectRequestLog({ status: false, message: errorDesc });
                     return;
@@ -535,7 +535,7 @@ class GPortalLogs {
                     }));
                 }
                 catch (e) {
-                    const errorDesc = '[error]process with kill log' + e.toString();
+                    const errorDesc = '[error]process with chat log' + e.toString();
                     (0, morgan_log_1.logGPortalProccessLog)(true, errorDesc);
                     rejectRequestLog({ status: false, message: errorDesc });
                     return;
@@ -639,7 +639,7 @@ class GPortalLogs {
                     }));
                 }
                 catch (e) {
-                    const errorDesc = '[error]process with kill log' + e.toString();
+                    const errorDesc = '[error]process with actions log' + e.toString();
                     (0, morgan_log_1.logGPortalProccessLog)(true, errorDesc);
                     rejectRequestLog({ status: false, message: errorDesc });
                     return;
@@ -840,7 +840,233 @@ class GPortalLogs {
                     }));
                 }
                 catch (e) {
-                    const errorDesc = '[error]process with kill log' + e.toString();
+                    const errorDesc = '[error]process with economy log' + e.toString();
+                    (0, morgan_log_1.logGPortalProccessLog)(true, errorDesc);
+                    rejectRequestLog({ status: false, message: errorDesc });
+                    return;
+                }
+            }));
+        });
+    }
+    getChestOwnershipLog(GameAreaRanges, cookies, fileName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.getChestOwnershipLogFTP(GameAreaRanges, fileName);
+        });
+    }
+    getChestOwnershipLogFTP(GameAreaRanges, fileName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolveAll, rejectRequestLog) => __awaiter(this, void 0, void 0, function* () {
+                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[process]fetch chest ownerhip log${fileName} BY FTP`);
+                try {
+                    yield new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                        (0, morgan_log_1.logGPortalProccessLog)(true, '[process]fetch chest ownerhip log');
+                        try {
+                            const path = require('path');
+                            const fs = require('fs');
+                            const ftp = require('ftp');
+                            const client = new ftp();
+                            const connectionProperties = {
+                                host: this.ftpHost,
+                                port: this.ftpPort,
+                                user: this.ftpAccount,
+                                password: this.ftpPassword
+                            };
+                            client.on('ready', () => {
+                                client.get(`SCUM/Saved/SaveFiles/Logs/${fileName}`, function (e, stream) {
+                                    if (e) {
+                                        const errorDesc = '[error][process]process with chest ownerhip log' + e.toString();
+                                        (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);
+                                        resolve(0);
+                                        rejectRequestLog({ status: false, message: errorDesc });
+                                        return;
+                                    }
+                                    let strContent;
+                                    let logFileBuffer = Buffer.from('', 'utf16le');
+                                    let size = 0;
+                                    stream.once('close', () => {
+                                        try {
+                                            client.end();
+                                        }
+                                        catch (e) {
+                                            (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[chest ownerhip log]stream closed: ` + e.toString());
+                                        }
+                                    });
+                                    stream.on("data", (data) => {
+                                        size += data.length;
+                                        logFileBuffer = Buffer.concat([logFileBuffer, data], size);
+                                    });
+                                    stream.on("end", () => {
+                                        try {
+                                            client.end();
+                                        }
+                                        catch (e) {
+                                            (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[chest ownerhip log]stream closed: ` + e.toString());
+                                        }
+                                        strContent = logFileBuffer.toString('utf16le');
+                                        try {
+                                            (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[process]process with chest ownerhip log`);
+                                            const rawLog = strContent;
+                                            const logs = rawLog
+                                                .split('\n')
+                                                .map((T) => {
+                                                try {
+                                                    return (0, scum_log_utils_1.tranferChestOwnershipRecordLog)(T, GameAreaRanges);
+                                                }
+                                                catch (e) {
+                                                    const errorDesc = '[error][process]process with chest ownerhip log' + e.toString();
+                                                    (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);
+                                                    return undefined;
+                                                }
+                                            })
+                                                .filter((T, key) => T !== undefined);
+                                            (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[done]fetch chest ownerhip file`);
+                                            resolve(0);
+                                            resolveAll(logs);
+                                            return;
+                                        }
+                                        catch (e) {
+                                            const errorDesc = '[error][process]process with chest ownerhip log' + e.toString();
+                                            (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);
+                                            resolve(0);
+                                            rejectRequestLog({ status: false, message: errorDesc });
+                                            return;
+                                        }
+                                    });
+                                });
+                            });
+                            client.on('error', function (e) {
+                                const errorDesc = '[error][process]process with chest ownerhip log' + e.toString();
+                                (0, morgan_log_1.logGPortalProccessLog)(true, errorDesc);
+                                resolve(0);
+                                rejectRequestLog({ status: false, message: errorDesc });
+                                return;
+                            });
+                            client.connect(connectionProperties);
+                        }
+                        catch (e) {
+                            const errorDesc = '[error][process]fetch log' + e.toString();
+                            (0, morgan_log_1.logGPortalProccessLog)(true, errorDesc);
+                            resolve(0);
+                            rejectRequestLog({ status: false, message: errorDesc });
+                            return;
+                        }
+                    }));
+                }
+                catch (e) {
+                    const errorDesc = '[error]process with chest ownerhip log' + e.toString();
+                    (0, morgan_log_1.logGPortalProccessLog)(true, errorDesc);
+                    rejectRequestLog({ status: false, message: errorDesc });
+                    return;
+                }
+            }));
+        });
+    }
+    getVehicleDestructionLog(GameAreaRanges, cookies, fileName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.getVehicleDestructionLogFTP(GameAreaRanges, fileName);
+        });
+    }
+    getVehicleDestructionLogFTP(GameAreaRanges, fileName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolveAll, rejectRequestLog) => __awaiter(this, void 0, void 0, function* () {
+                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[process]fetch vehicle destruction log${fileName} BY FTP`);
+                try {
+                    yield new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                        (0, morgan_log_1.logGPortalProccessLog)(true, '[process]fetch vehicle destruction log');
+                        try {
+                            const path = require('path');
+                            const fs = require('fs');
+                            const ftp = require('ftp');
+                            const client = new ftp();
+                            const connectionProperties = {
+                                host: this.ftpHost,
+                                port: this.ftpPort,
+                                user: this.ftpAccount,
+                                password: this.ftpPassword
+                            };
+                            client.on('ready', () => {
+                                client.get(`SCUM/Saved/SaveFiles/Logs/${fileName}`, function (e, stream) {
+                                    if (e) {
+                                        const errorDesc = '[error][process]process with vehicle destruction log' + e.toString();
+                                        (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);
+                                        resolve(0);
+                                        rejectRequestLog({ status: false, message: errorDesc });
+                                        return;
+                                    }
+                                    let strContent;
+                                    let logFileBuffer = Buffer.from('', 'utf16le');
+                                    let size = 0;
+                                    stream.once('close', () => {
+                                        try {
+                                            client.end();
+                                        }
+                                        catch (e) {
+                                            (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[vehicle destruction log]stream closed: ` + e.toString());
+                                        }
+                                    });
+                                    stream.on("data", (data) => {
+                                        size += data.length;
+                                        logFileBuffer = Buffer.concat([logFileBuffer, data], size);
+                                    });
+                                    stream.on("end", () => {
+                                        try {
+                                            client.end();
+                                        }
+                                        catch (e) {
+                                            (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[vehicle destruction log]stream closed: ` + e.toString());
+                                        }
+                                        strContent = logFileBuffer.toString('utf16le');
+                                        try {
+                                            (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[process]process with vehicle destruction log`);
+                                            const rawLog = strContent;
+                                            const logs = rawLog
+                                                .split('\n')
+                                                .map((T) => {
+                                                try {
+                                                    return (0, scum_log_utils_1.tranferVehicleDestructionRecordLog)(T, GameAreaRanges);
+                                                }
+                                                catch (e) {
+                                                    const errorDesc = '[error][process]process with vehicle destruction log' + e.toString();
+                                                    (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);
+                                                    return undefined;
+                                                }
+                                            })
+                                                .filter((T, key) => T !== undefined);
+                                            (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[done]fetch vehicle destruction file`);
+                                            resolve(0);
+                                            resolveAll(logs);
+                                            return;
+                                        }
+                                        catch (e) {
+                                            const errorDesc = '[error][process]process with vehicle destruction log' + e.toString();
+                                            (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, errorDesc);
+                                            resolve(0);
+                                            rejectRequestLog({ status: false, message: errorDesc });
+                                            return;
+                                        }
+                                    });
+                                });
+                            });
+                            client.on('error', function (e) {
+                                const errorDesc = '[error][process]process with vehicle destruction log' + e.toString();
+                                (0, morgan_log_1.logGPortalProccessLog)(true, errorDesc);
+                                resolve(0);
+                                rejectRequestLog({ status: false, message: errorDesc });
+                                return;
+                            });
+                            client.connect(connectionProperties);
+                        }
+                        catch (e) {
+                            const errorDesc = '[error][process]fetch log' + e.toString();
+                            (0, morgan_log_1.logGPortalProccessLog)(true, errorDesc);
+                            resolve(0);
+                            rejectRequestLog({ status: false, message: errorDesc });
+                            return;
+                        }
+                    }));
+                }
+                catch (e) {
+                    const errorDesc = '[error]process with vehicle destruction log' + e.toString();
                     (0, morgan_log_1.logGPortalProccessLog)(true, errorDesc);
                     rejectRequestLog({ status: false, message: errorDesc });
                     return;

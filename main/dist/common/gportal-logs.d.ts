@@ -58,6 +58,10 @@ declare class GPortalLogs {
     getViolationsLogFTP(GameAreaRanges: any, fileName: string): Promise<unknown>;
     getEconomyLog(GameAreaRanges: any, cookies: any, fileName: string): Promise<unknown>;
     getEconomyLogFTP(GameAreaRanges: any, fileName: string): Promise<unknown>;
+    getChestOwnershipLog(GameAreaRanges: any, cookies: any, fileName: string): Promise<unknown>;
+    getChestOwnershipLogFTP(GameAreaRanges: any, fileName: string): Promise<unknown>;
+    getVehicleDestructionLog(GameAreaRanges: any, cookies: any, fileName: string): Promise<unknown>;
+    getVehicleDestructionLogFTP(GameAreaRanges: any, fileName: string): Promise<unknown>;
     getServerStatus(battleMetricServerId: any): Promise<unknown>;
 }
 export default GPortalLogs;

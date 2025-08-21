@@ -34,12 +34,10 @@ const page_data_builder_1 = require("../../common/page-data-builder");
 const admin_sys_access_guard_1 = require("../../guard/admin-sys-access.guard");
 const super_admin_sys_access_guard_1 = require("../../guard/super-admin-sys-access.guard");
 const morgan_log_1 = require("../../common/morgan-log");
-const server_config_service_1 = require("../server-config/server-config.service");
 const write_admin_sys_access_guard_1 = require("../../guard/write-admin-sys-access.guard");
 let ChatMessageAdminSysController = class ChatMessageAdminSysController {
-    constructor(chatMessageService, serverConfigService) {
+    constructor(chatMessageService) {
         this.chatMessageService = chatMessageService;
-        this.serverConfigService = serverConfigService;
     }
     list(page, query, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -144,8 +142,7 @@ __decorate([
 ChatMessageAdminSysController = __decorate([
     (0, common_1.Controller)('/chatMessageAdminSys'),
     (0, common_1.UseGuards)(admin_sys_access_guard_1.AdminSysGuard),
-    __metadata("design:paramtypes", [chat_message_service_1.ChatMessageService,
-        server_config_service_1.ServerConfigService])
+    __metadata("design:paramtypes", [chat_message_service_1.ChatMessageService])
 ], ChatMessageAdminSysController);
 exports.ChatMessageAdminSysController = ChatMessageAdminSysController;
 //# sourceMappingURL=chat-message-admin-sys.controller.js.map

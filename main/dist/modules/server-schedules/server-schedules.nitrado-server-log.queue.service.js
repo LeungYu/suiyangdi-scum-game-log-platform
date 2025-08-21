@@ -34,6 +34,9 @@ const format_page_query_1 = require("../../common/format-page-query");
 const actions_record_service_1 = require("../actions-record/actions-record.service");
 const violations_record_service_1 = require("../violations-record/violations-record.service");
 const economy_service_1 = require("../economy/economy.service");
+const chest_ownership_record_service_1 = require("../chest-ownership-record/chest-ownership-record.service");
+const vehicle_destruction_record_service_1 = require("../vehicle-destruction-record/vehicle-destruction-record.service");
+const unrecognized_record_service_1 = require("../unrecognized-record/unrecognized-record.service");
 const scum_log_utils_1 = require("../../common/scum-log-utils");
 var ServerLogTaskType;
 (function (ServerLogTaskType) {
@@ -41,7 +44,7 @@ var ServerLogTaskType;
 })(ServerLogTaskType = exports.ServerLogTaskType || (exports.ServerLogTaskType = {}));
 const FAILURE_RETRY_INTERVAL = 3000;
 let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLogQueueService_1 = class ServerSchedulesNitradoServerLogQueueService {
-    constructor(serverConfigService, killService, userLoginService, adminCommandService, chatMessageService, actionsRecordService, violationsRecordService, economyService) {
+    constructor(serverConfigService, killService, userLoginService, adminCommandService, chatMessageService, actionsRecordService, violationsRecordService, economyService, chestOwnershipRecordService, vehicleDestructionRecordService, unrecognizedRecordService) {
         this.serverConfigService = serverConfigService;
         this.killService = killService;
         this.userLoginService = userLoginService;
@@ -50,6 +53,9 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
         this.actionsRecordService = actionsRecordService;
         this.violationsRecordService = violationsRecordService;
         this.economyService = economyService;
+        this.chestOwnershipRecordService = chestOwnershipRecordService;
+        this.vehicleDestructionRecordService = vehicleDestructionRecordService;
+        this.unrecognizedRecordService = unrecognizedRecordService;
         this.serverLogQueueHandler();
         this.add({
             timeStamp: Date.now() + '',
@@ -143,6 +149,7 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
         });
     }
     getServerLogsSchedule() {
+        var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
             (0, morgan_log_1.logNitradoProccessLog)(true, `call: ${new Date().toISOString()}`);
             try {
@@ -152,6 +159,9 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
                 yield this.chatMessageService.limitAllChatMessage();
                 yield this.violationsRecordService.limitAllViolationsRecord();
                 yield this.economyService.limitAllEconomy();
+                yield this.chestOwnershipRecordService.limitAllChestOwnershipRecord();
+                yield this.vehicleDestructionRecordService.limitAllVehicleDestructionRecord();
+                yield this.unrecognizedRecordService.limitAllUnrecognizedRecord();
                 const resGetLogsFileNames = yield ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance.getLogsFileNamesJSon();
                 const allKillLogFileNames = resGetLogsFileNames.filter((T) => T.indexOf('kill') !== -1 && (0, scum_log_utils_1.isLaterThanLegalDaysAgo)(T));
                 const allLoginLogFileNames = resGetLogsFileNames.filter((T) => T.indexOf('login') !== -1 && (0, scum_log_utils_1.isLaterThanLegalDaysAgo)(T));
@@ -160,20 +170,35 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
                 const allActionsLogFileNames = resGetLogsFileNames.filter((T) => T.indexOf('gameplay') !== -1 && (0, scum_log_utils_1.isLaterThanLegalDaysAgo)(T));
                 const allViolationsLogFileNames = resGetLogsFileNames.filter((T) => T.indexOf('violations') !== -1 && (0, scum_log_utils_1.isLaterThanLegalDaysAgo)(T));
                 const allEconomyLogFileNames = resGetLogsFileNames.filter((T) => T.indexOf('economy') !== -1 && (0, scum_log_utils_1.isLaterThanLegalDaysAgo)(T));
+                const allChestOwnershipLogFileNames = resGetLogsFileNames.filter((T) => T.indexOf('chest') !== -1 && (0, scum_log_utils_1.isLaterThanLegalDaysAgo)(T));
+                const allVehicleDestructionLogFileNames = resGetLogsFileNames.filter((T) => T.indexOf('vehicle') !== -1 && (0, scum_log_utils_1.isLaterThanLegalDaysAgo)(T));
                 const [resGetKill2LoginLogs, resGetAdmin2ChatLogs, resGetActions2ViolationsLogs, resGetServerStatus] = yield Promise.all([
                     yield this.proccessKill2LoginLogs(allLoginLogFileNames, allKillLogFileNames),
                     yield this.proccessAdmin2ChatLogs(allAdminLogFileNames, allChatLogFileNames),
-                    yield this.proccessActions2ViolationsLogs(allActionsLogFileNames, allViolationsLogFileNames, allEconomyLogFileNames),
+                    yield this.proccessActions2ViolationsLogs(allActionsLogFileNames, allViolationsLogFileNames, allEconomyLogFileNames, allChestOwnershipLogFileNames, allVehicleDestructionLogFileNames),
                     yield this.proccessServerStatus(),
                 ]);
+                let rawUnrecognizedLogsJsonArray = [];
+                if ((_a = resGetKill2LoginLogs === null || resGetKill2LoginLogs === void 0 ? void 0 : resGetKill2LoginLogs.rawUnrecognizedLogsJsonArray) === null || _a === void 0 ? void 0 : _a.length) {
+                    rawUnrecognizedLogsJsonArray = [...rawUnrecognizedLogsJsonArray, ...resGetKill2LoginLogs.rawUnrecognizedLogsJsonArray];
+                }
+                if ((_b = resGetAdmin2ChatLogs === null || resGetAdmin2ChatLogs === void 0 ? void 0 : resGetAdmin2ChatLogs.rawUnrecognizedLogsJsonArray) === null || _b === void 0 ? void 0 : _b.length) {
+                    rawUnrecognizedLogsJsonArray = [...rawUnrecognizedLogsJsonArray, ...resGetAdmin2ChatLogs.rawUnrecognizedLogsJsonArray];
+                }
+                if ((_c = resGetActions2ViolationsLogs === null || resGetActions2ViolationsLogs === void 0 ? void 0 : resGetActions2ViolationsLogs.rawUnrecognizedLogsJsonArray) === null || _c === void 0 ? void 0 : _c.length) {
+                    rawUnrecognizedLogsJsonArray = [...rawUnrecognizedLogsJsonArray, ...resGetActions2ViolationsLogs.rawUnrecognizedLogsJsonArray];
+                }
+                const resGetUnrecognizedLogs = yield this.processUnrecognizedLogs(rawUnrecognizedLogsJsonArray);
                 (0, morgan_log_1.logServerKill2LoginLog)(true, `success: get kill/login log${new Date().toISOString()}`);
                 (0, morgan_log_1.logServerKill2LoginLog)(true, `result: get kill/login log, add ${resGetKill2LoginLogs.loginProccessedNum === undefined ? 0 : resGetKill2LoginLogs.loginProccessedNum} login logs, add ${resGetKill2LoginLogs.killProccessedNum === undefined ? 0 : resGetKill2LoginLogs.killProccessedNum}kill logs`);
                 (0, morgan_log_1.logServerAdmin2ChatLogLog)(true, `success: get admin/chat log${new Date().toISOString()}`);
                 (0, morgan_log_1.logServerAdmin2ChatLogLog)(true, `result: get admin/chat log, add ${resGetAdmin2ChatLogs.adminProccessedNum === undefined ? 0 : resGetAdmin2ChatLogs.adminProccessedNum}admin logs, add ${resGetAdmin2ChatLogs.chatProccessedNum === undefined ? 0 : resGetAdmin2ChatLogs.chatProccessedNum}chat logs`);
-                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `result: get action/violation/economy log, add ${resGetActions2ViolationsLogs.actionsProccessedNum === undefined ? 0 : resGetActions2ViolationsLogs.actionsProccessedNum}action logs, add ${resGetActions2ViolationsLogs.violationsProccessedNum === undefined ? 0 : resGetActions2ViolationsLogs.violationsProccessedNum}violation logs, add ${resGetActions2ViolationsLogs.economyProccessedNum === undefined ? 0 : resGetActions2ViolationsLogs.economyProccessedNum}economy log`);
+                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `result: get action/violation/economy/chest ownership/vehicle destruction log, add ${resGetActions2ViolationsLogs.actionsProccessedNum === undefined ? 0 : resGetActions2ViolationsLogs.actionsProccessedNum}action logs, add ${resGetActions2ViolationsLogs.violationsProccessedNum === undefined ? 0 : resGetActions2ViolationsLogs.violationsProccessedNum}violation logs, add ${resGetActions2ViolationsLogs.economyProccessedNum === undefined ? 0 : resGetActions2ViolationsLogs.economyProccessedNum}economy log, add ${resGetActions2ViolationsLogs.ChestOwnershipProccessedNum === undefined ? 0 : resGetActions2ViolationsLogs.ChestOwnershipProccessedNum}chest ownership log, add ${resGetActions2ViolationsLogs.vehicleDestructionProccessedNum === undefined ? 0 : resGetActions2ViolationsLogs.vehicleDestructionProccessedNum}vehicle destruction log`);
+                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `success: get unrecognized log${new Date().toISOString()}`);
+                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `result: get unrecognized log, add ${resGetUnrecognizedLogs.unrecognizedProccessedNum === undefined ? 0 : resGetUnrecognizedLogs.unrecognizedProccessedNum}unrecognized logs`);
                 const resUpdateNitradoServerLogAsyncRecord = this.serverConfigService.updateServerConfig({
                     name: 'NitradoServerLogAsyncRecord',
-                    value: JSON.stringify({ value: { recentTimeStamp: Date.now() + '', result: `success: add ${resGetKill2LoginLogs.loginProccessedNum === undefined ? 0 : resGetKill2LoginLogs.loginProccessedNum} login logs, add ${resGetKill2LoginLogs.killProccessedNum === undefined ? 0 : resGetKill2LoginLogs.killProccessedNum}kill logs, add ${resGetAdmin2ChatLogs.adminProccessedNum === undefined ? 0 : resGetAdmin2ChatLogs.adminProccessedNum}admin logs, add ${resGetAdmin2ChatLogs.chatProccessedNum === undefined ? 0 : resGetAdmin2ChatLogs.chatProccessedNum}chat logs, ip:${resGetServerStatus.IP}, add ${resGetActions2ViolationsLogs.actionsProccessedNum === undefined ? 0 : resGetActions2ViolationsLogs.actionsProccessedNum} action log, add ${resGetActions2ViolationsLogs.violationsProccessedNum === undefined ? 0 : resGetActions2ViolationsLogs.violationsProccessedNum}violation log, add ${resGetActions2ViolationsLogs.economyProccessedNum === undefined ? 0 : resGetActions2ViolationsLogs.economyProccessedNum}economy:${resGetServerStatus.OnlinePlayers}` } })
+                    value: JSON.stringify({ value: { recentTimeStamp: Date.now() + '', result: `success: add ${resGetKill2LoginLogs.loginProccessedNum === undefined ? 0 : resGetKill2LoginLogs.loginProccessedNum} login logs, add ${resGetKill2LoginLogs.killProccessedNum === undefined ? 0 : resGetKill2LoginLogs.killProccessedNum}kill logs, add ${resGetAdmin2ChatLogs.adminProccessedNum === undefined ? 0 : resGetAdmin2ChatLogs.adminProccessedNum}admin logs, add ${resGetAdmin2ChatLogs.chatProccessedNum === undefined ? 0 : resGetAdmin2ChatLogs.chatProccessedNum}chat logs, add ${resGetActions2ViolationsLogs.actionsProccessedNum === undefined ? 0 : resGetActions2ViolationsLogs.actionsProccessedNum} action log, add ${resGetActions2ViolationsLogs.violationsProccessedNum === undefined ? 0 : resGetActions2ViolationsLogs.violationsProccessedNum}violation log, add ${resGetActions2ViolationsLogs.economyProccessedNum === undefined ? 0 : resGetActions2ViolationsLogs.economyProccessedNum}economy log, add ${resGetActions2ViolationsLogs.ChestOwnershipProccessedNum === undefined ? 0 : resGetActions2ViolationsLogs.ChestOwnershipProccessedNum}chest ownership log, add ${resGetActions2ViolationsLogs.vehicleDestructionProccessedNum === undefined ? 0 : resGetActions2ViolationsLogs.vehicleDestructionProccessedNum}vehicle destruction log, add ${resGetUnrecognizedLogs.unrecognizedProccessedNum === undefined ? 0 : resGetActions2ViolationsLogs.unrecognizedProccessedNum}unrecognized log` } })
                 });
                 return { proccess: true };
             }
@@ -196,16 +221,23 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
                     this.proccessLoginLogs(loginLogFileNames),
                     this.proccessKillLogs(killLogFileNames)
                 ]);
+                let rawUnrecognizedLogsJsonArray = [];
                 let binded2SortedQueueArray;
-                if (rawLoginLogsJsonArray && rawLoginLogsJsonArray.length && rawKillLogsJsonArray && rawKillLogsJsonArray.length) {
+                if (rawLoginLogsJsonArray && rawLoginLogsJsonArray.length && rawLoginLogsJsonArray[0] && rawLoginLogsJsonArray[0].length && rawKillLogsJsonArray && rawKillLogsJsonArray.length && rawKillLogsJsonArray[0] && rawKillLogsJsonArray[0].length) {
                     (0, morgan_log_1.logServerKill2LoginLog)(true, `[process]sort  login/kill log`);
-                    binded2SortedQueueArray = yield this.bindAndSortLogsArrayToQueueArray(rawLoginLogsJsonArray, rawKillLogsJsonArray);
+                    binded2SortedQueueArray = yield this.bindAndSortLogsArrayToQueueArray(rawLoginLogsJsonArray[0], rawKillLogsJsonArray[0]);
                 }
-                else if (rawLoginLogsJsonArray && rawLoginLogsJsonArray.length) {
-                    binded2SortedQueueArray = rawLoginLogsJsonArray;
+                else if (rawLoginLogsJsonArray && rawLoginLogsJsonArray.length && rawLoginLogsJsonArray[0] && rawLoginLogsJsonArray[0].length) {
+                    binded2SortedQueueArray = rawLoginLogsJsonArray[0];
                 }
-                else if (rawKillLogsJsonArray && rawKillLogsJsonArray.length) {
-                    binded2SortedQueueArray = rawKillLogsJsonArray;
+                else if (rawKillLogsJsonArray && rawKillLogsJsonArray.length && rawKillLogsJsonArray[0] && rawKillLogsJsonArray[0].length) {
+                    binded2SortedQueueArray = rawKillLogsJsonArray[0];
+                }
+                if (rawLoginLogsJsonArray && rawLoginLogsJsonArray.length && rawLoginLogsJsonArray[1] && rawLoginLogsJsonArray[1].length) {
+                    rawUnrecognizedLogsJsonArray = [...rawUnrecognizedLogsJsonArray, ...rawLoginLogsJsonArray[1]];
+                }
+                if (rawKillLogsJsonArray && rawKillLogsJsonArray.length && rawKillLogsJsonArray[1] && rawKillLogsJsonArray[1].length) {
+                    rawUnrecognizedLogsJsonArray = [...rawUnrecognizedLogsJsonArray, ...rawKillLogsJsonArray[1]];
                 }
                 if (binded2SortedQueueArray && binded2SortedQueueArray.length) {
                     (0, morgan_log_1.logServerKill2LoginLog)(true, `[process]save sorted data`);
@@ -220,7 +252,7 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
                             yield this.proccessKillLog(queueItem);
                         }
                     }
-                    resolveAll({ loginProccessedNum, killProccessedNum });
+                    resolveAll({ loginProccessedNum, killProccessedNum, rawUnrecognizedLogsJsonArray });
                 }
                 else {
                     resolveAll(binded2SortedQueueArray !== false);
@@ -234,7 +266,7 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
     }
     proccessLoginLogs(loginLogFileNames) {
         return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
-            let targetFileNames = [], resGetLatestRecordTime = null;
+            let targetFileNames = [], unrecognizedLogs = [], resGetLatestRecordTime = null;
             try {
                 (0, morgan_log_1.logServerKill2LoginLog)(true, '[filter] login / kill');
                 resGetLatestRecordTime = yield this.userLoginService.getLatestRecordTime();
@@ -270,7 +302,9 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
                 for (let targetFileName of targetFileNames) {
                     let resGameAreaRanges = yield this.serverConfigService.getServerConfig({ name: 'GameAreaRanges' });
                     let GameAreaRanges = JSON.parse(resGameAreaRanges.value).value;
-                    const loginLogs = yield ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance.getLoginLog(GameAreaRanges, targetFileName);
+                    let loginLogs = yield ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance.getLoginLog(GameAreaRanges, targetFileName);
+                    unrecognizedLogs = unrecognizedLogs.concat(loginLogs.filter(T => (T === null || T === void 0 ? void 0 : T.unrecognized) === true).map(T => { T.fileName = targetFileName; return T; }));
+                    loginLogs = loginLogs.filter(T => (T === null || T === void 0 ? void 0 : T.unrecognized) !== true);
                     for (let loginLog of loginLogs) {
                         if (resGetLatestRecordTime && loginLog && loginLog.createdTimeStamp && resGetLatestRecordTime > loginLog.createdTimeStamp) {
                             continue;
@@ -287,7 +321,7 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
                         rawLoginLogsJsonArray.push(loginLog);
                     }
                 }
-                resolve(rawLoginLogsJsonArray);
+                resolve([rawLoginLogsJsonArray, unrecognizedLogs]);
             }
             catch (e) {
                 (0, morgan_log_1.logServerKill2LoginLog)(true, e.toString());
@@ -353,7 +387,7 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
     }
     proccessKillLogs(killLogFileNames) {
         return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
-            let targetFileNames = [], resGetLatestKill, resGetLatestRecordTime;
+            let targetFileNames = [], unrecognizedLogs = [], resGetLatestKill, resGetLatestRecordTime;
             try {
                 resGetLatestKill = yield this.killService.getLatestKill();
                 resGetLatestRecordTime = resGetLatestKill && resGetLatestKill.occuredTimeStamp ? resGetLatestKill.occuredTimeStamp : null;
@@ -386,7 +420,9 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
                 for (let targetFileName of targetFileNames) {
                     let resGameAreaRanges = yield this.serverConfigService.getServerConfig({ name: 'GameAreaRanges' });
                     let GameAreaRanges = JSON.parse(resGameAreaRanges.value).value;
-                    const killLogs = yield ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance.getKillLog(GameAreaRanges, targetFileName);
+                    let killLogs = yield ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance.getKillLog(GameAreaRanges, targetFileName);
+                    unrecognizedLogs = unrecognizedLogs.concat(killLogs.filter(T => (T === null || T === void 0 ? void 0 : T.unrecognized) === true).map(T => { T.fileName = targetFileName; return T; }));
+                    killLogs = killLogs.filter(T => (T === null || T === void 0 ? void 0 : T.unrecognized) !== true);
                     for (let killLog of killLogs) {
                         if (resGetLatestKill && resGetLatestKill.occuredTimeStamp && killLog && killLog.occuredTimeStamp && killLog.occuredTimeStamp <= resGetLatestKill.occuredTimeStamp) {
                             continue;
@@ -406,7 +442,7 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
                         rawKillLogsJsonArray.push(killLog);
                     }
                 }
-                resolve(rawKillLogsJsonArray);
+                resolve([rawKillLogsJsonArray, unrecognizedLogs]);
             }
             catch (e) {
                 (0, morgan_log_1.logServerKill2LoginLog)(true, e.toString());
@@ -481,20 +517,29 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
                     this.proccessAdminLogs(adminLogFileNames),
                     this.proccessChatLogs(chatLogFileNames)
                 ]);
+                let rawUnrecognizedLogsJsonArray = [];
                 let adminProccessedNum = 0, chatProccessedNum = 0;
+                let batchArray = [];
                 if (rawAdminLogsJsonArray && rawAdminLogsJsonArray.length) {
-                    for (let rawAdminLogsJson of rawAdminLogsJsonArray) {
-                        adminProccessedNum++;
-                        yield this.proccessAdminLog(rawAdminLogsJson);
+                    if (rawAdminLogsJsonArray[0] && rawAdminLogsJsonArray[0].length) {
+                        batchArray = [...batchArray, ...rawAdminLogsJsonArray[0].map(T => (this.proccessAdminLog(T)))];
+                        adminProccessedNum = rawAdminLogsJsonArray[0].length;
+                    }
+                    if (rawAdminLogsJsonArray[1] && rawAdminLogsJsonArray[1].length) {
+                        rawUnrecognizedLogsJsonArray = [...rawUnrecognizedLogsJsonArray, ...rawAdminLogsJsonArray[1]];
                     }
                 }
                 if (rawChatLogsJsonArray && rawChatLogsJsonArray.length) {
-                    for (let rawChatLogsJson of rawChatLogsJsonArray) {
-                        chatProccessedNum++;
-                        yield this.proccessChatLog(rawChatLogsJson);
+                    if (rawChatLogsJsonArray[0] && rawChatLogsJsonArray[0].length) {
+                        batchArray = [...batchArray, ...rawChatLogsJsonArray[0].map(T => (this.proccessChatLog(T)))];
+                        chatProccessedNum = rawChatLogsJsonArray[0].length;
+                    }
+                    if (rawChatLogsJsonArray[1] && rawChatLogsJsonArray[1].length) {
+                        rawUnrecognizedLogsJsonArray = [...rawUnrecognizedLogsJsonArray, ...rawChatLogsJsonArray[1]];
                     }
                 }
-                resolveAll({ adminProccessedNum, chatProccessedNum });
+                yield Promise.all(batchArray);
+                resolveAll({ adminProccessedNum, chatProccessedNum, rawUnrecognizedLogsJsonArray });
             }
             catch (e) {
                 (0, morgan_log_1.logServerAdmin2ChatLogLog)(true, e.toString());
@@ -504,7 +549,7 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
     }
     proccessAdminLogs(adminLogFileNames) {
         return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
-            let targetFileNames = [], resGetLatestRecordTime = null;
+            let targetFileNames = [], unrecognizedLogs = [], resGetLatestRecordTime = null;
             try {
                 resGetLatestRecordTime = yield this.adminCommandService.getLatestRecordTime();
                 resGetLatestRecordTime = resGetLatestRecordTime ? resGetLatestRecordTime : null;
@@ -537,7 +582,9 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
                 for (let targetFileName of targetFileNames) {
                     let resGameAreaRanges = yield this.serverConfigService.getServerConfig({ name: 'GameAreaRanges' });
                     let GameAreaRanges = JSON.parse(resGameAreaRanges.value).value;
-                    const adminLogs = yield ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance.getAdminLog(GameAreaRanges, targetFileName);
+                    let adminLogs = yield ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance.getAdminLog(GameAreaRanges, targetFileName);
+                    unrecognizedLogs = unrecognizedLogs.concat(adminLogs.filter(T => (T === null || T === void 0 ? void 0 : T.unrecognized) === true).map(T => { T.fileName = targetFileName; return T; }));
+                    adminLogs = adminLogs.filter(T => (T === null || T === void 0 ? void 0 : T.unrecognized) !== true);
                     for (let adminLog of adminLogs) {
                         if (resGetLatestRecordTime && adminLog && adminLog.sendTimeStamp && resGetLatestRecordTime > adminLog.sendTimeStamp) {
                             continue;
@@ -556,7 +603,7 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
                         rawAdminLogsJsonArray.push(adminLog);
                     }
                 }
-                resolve(rawAdminLogsJsonArray);
+                resolve([rawAdminLogsJsonArray, unrecognizedLogs]);
             }
             catch (e) {
                 (0, morgan_log_1.logServerAdmin2ChatLogLog)(true, e.toString());
@@ -585,7 +632,7 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
     }
     proccessChatLogs(chatLogFileNames) {
         return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
-            let targetFileNames = [], resGetLatestRecordTime = null;
+            let targetFileNames = [], unrecognizedLogs = [], resGetLatestRecordTime = null;
             try {
                 resGetLatestRecordTime = yield this.chatMessageService.getLatestRecordTime();
                 resGetLatestRecordTime = resGetLatestRecordTime ? resGetLatestRecordTime : null;
@@ -616,7 +663,9 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
             try {
                 const rawrChatLogsJsonArray = [];
                 for (let targetFileName of targetFileNames) {
-                    const chatLogs = yield ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance.getChatLog(targetFileName);
+                    let chatLogs = yield ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance.getChatLog(targetFileName);
+                    unrecognizedLogs = unrecognizedLogs.concat(chatLogs.filter(T => (T === null || T === void 0 ? void 0 : T.unrecognized) === true).map(T => { T.fileName = targetFileName; return T; }));
+                    chatLogs = chatLogs.filter(T => (T === null || T === void 0 ? void 0 : T.unrecognized) !== true);
                     for (let chatLog of chatLogs) {
                         if (resGetLatestRecordTime && chatLog && chatLog.sendTimeStamp && resGetLatestRecordTime > chatLog.sendTimeStamp) {
                             continue;
@@ -636,7 +685,7 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
                         rawrChatLogsJsonArray.push(chatLog);
                     }
                 }
-                resolve(rawrChatLogsJsonArray);
+                resolve([rawrChatLogsJsonArray, unrecognizedLogs]);
             }
             catch (e) {
                 (0, morgan_log_1.logServerAdmin2ChatLogLog)(true, e.toString());
@@ -663,34 +712,66 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
             }
         }));
     }
-    proccessActions2ViolationsLogs(actionsLogFileNames, violationsLogFileNames, economyLogFileNames) {
+    proccessActions2ViolationsLogs(actionsLogFileNames, violationsLogFileNames, economyLogFileNames, allChestOwnershipLogFileNames, allVehicleDestructionLogFileNames) {
         return new Promise((resolveAll) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const [rawActionsLogsJsonArray, rawViolationsLogsJsonArray, rawEconomyLogsJsonArray] = yield Promise.all([
+                const [rawActionsLogsJsonArray, rawViolationsLogsJsonArray, rawEconomyLogsJsonArray, rawChestOwnershipLogsJsonArray, rawVehicleDestructionLogsJsonArray] = yield Promise.all([
                     this.proccessActionsLogs(actionsLogFileNames),
                     this.proccessViolationsLogs(violationsLogFileNames),
-                    this.proccessEconomyLogs(economyLogFileNames)
+                    this.proccessEconomyLogs(economyLogFileNames),
+                    this.proccessChestOwnershipLogs(allChestOwnershipLogFileNames),
+                    this.proccessVehicleDestructionLogs(allVehicleDestructionLogFileNames)
                 ]);
-                let actionsProccessedNum = 0, violationsProccessedNum = 0, economyProccessedNum = 0;
+                let rawUnrecognizedLogsJsonArray = [];
+                let actionsProccessedNum = 0, violationsProccessedNum = 0, economyProccessedNum = 0, chestOwnershipProccessedNum = 0, vehicleDestructionProccessedNum = 0;
+                let batchArray = [];
                 if (rawActionsLogsJsonArray && rawActionsLogsJsonArray.length) {
-                    for (let rawActionsLogsJson of rawActionsLogsJsonArray) {
-                        actionsProccessedNum++;
-                        yield this.proccessActionsLog(rawActionsLogsJson);
+                    if (rawActionsLogsJsonArray[0] && rawActionsLogsJsonArray[0].length) {
+                        batchArray = [...batchArray, ...rawActionsLogsJsonArray[0].map(T => (this.proccessActionsLog(T)))];
+                        actionsProccessedNum = rawActionsLogsJsonArray[0].length;
+                    }
+                    if (rawActionsLogsJsonArray[1] && rawActionsLogsJsonArray[1].length) {
+                        rawUnrecognizedLogsJsonArray = [...rawUnrecognizedLogsJsonArray, ...rawActionsLogsJsonArray[1]];
                     }
                 }
                 if (rawViolationsLogsJsonArray && rawViolationsLogsJsonArray.length) {
-                    for (let rawViolationsLogsJson of rawViolationsLogsJsonArray) {
-                        violationsProccessedNum++;
-                        yield this.proccessViolationsLog(violationsLogFileNames);
+                    if (rawViolationsLogsJsonArray[0] && rawViolationsLogsJsonArray[0].length) {
+                        batchArray = [...batchArray, ...rawViolationsLogsJsonArray[0].map(T => (this.proccessViolationsLog(T)))];
+                        violationsProccessedNum = rawViolationsLogsJsonArray[0].length;
+                    }
+                    if (rawViolationsLogsJsonArray[1] && rawViolationsLogsJsonArray[1].length) {
+                        rawUnrecognizedLogsJsonArray = [...rawUnrecognizedLogsJsonArray, ...rawViolationsLogsJsonArray[1]];
                     }
                 }
                 if (rawEconomyLogsJsonArray && rawEconomyLogsJsonArray.length) {
-                    for (let rawEconomyLogsJson of rawEconomyLogsJsonArray) {
-                        economyProccessedNum++;
-                        yield this.proccessEconomyLog(rawEconomyLogsJson);
+                    if (rawEconomyLogsJsonArray[0] && rawEconomyLogsJsonArray[0].length) {
+                        batchArray = [...batchArray, ...rawEconomyLogsJsonArray[0].map(T => (this.proccessEconomyLog(T)))];
+                        economyProccessedNum = rawEconomyLogsJsonArray[0].length;
+                    }
+                    if (rawEconomyLogsJsonArray[1] && rawEconomyLogsJsonArray[1].length) {
+                        rawUnrecognizedLogsJsonArray = [...rawUnrecognizedLogsJsonArray, ...rawEconomyLogsJsonArray[1]];
                     }
                 }
-                resolveAll({ actionsProccessedNum, violationsProccessedNum, economyProccessedNum });
+                if (rawChestOwnershipLogsJsonArray && rawChestOwnershipLogsJsonArray.length) {
+                    if (rawChestOwnershipLogsJsonArray[0] && rawChestOwnershipLogsJsonArray[0].length) {
+                        batchArray = [...batchArray, ...rawChestOwnershipLogsJsonArray[0].map(T => (this.proccessChestOwnershipLog(T)))];
+                        chestOwnershipProccessedNum = rawChestOwnershipLogsJsonArray[0].length;
+                    }
+                    if (rawChestOwnershipLogsJsonArray[1] && rawChestOwnershipLogsJsonArray[1].length) {
+                        rawUnrecognizedLogsJsonArray = [...rawUnrecognizedLogsJsonArray, ...rawChestOwnershipLogsJsonArray[1]];
+                    }
+                }
+                if (rawVehicleDestructionLogsJsonArray && rawVehicleDestructionLogsJsonArray.length) {
+                    if (rawVehicleDestructionLogsJsonArray[0] && rawVehicleDestructionLogsJsonArray[0].length) {
+                        batchArray = [...batchArray, ...rawVehicleDestructionLogsJsonArray[0].map(T => (this.proccessVehicleDestructionLog(T)))];
+                        vehicleDestructionProccessedNum = rawVehicleDestructionLogsJsonArray[0].length;
+                    }
+                    if (rawVehicleDestructionLogsJsonArray[1] && rawVehicleDestructionLogsJsonArray[1].length) {
+                        rawUnrecognizedLogsJsonArray = [...rawUnrecognizedLogsJsonArray, ...rawVehicleDestructionLogsJsonArray[1]];
+                    }
+                }
+                yield Promise.all(batchArray);
+                resolveAll({ actionsProccessedNum, violationsProccessedNum, economyProccessedNum, chestOwnershipProccessedNum, vehicleDestructionProccessedNum, rawUnrecognizedLogsJsonArray });
             }
             catch (e) {
                 (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, e.toString());
@@ -700,7 +781,7 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
     }
     proccessActionsLogs(actionsLogFileNames) {
         return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
-            let targetFileNames = [], resGetLatestRecordTime = null;
+            let targetFileNames = [], unrecognizedLogs = [], resGetLatestRecordTime = null;
             try {
                 resGetLatestRecordTime = yield this.actionsRecordService.getLatestRecordTime();
                 resGetLatestRecordTime = resGetLatestRecordTime ? resGetLatestRecordTime : null;
@@ -733,7 +814,9 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
                 for (let targetFileName of targetFileNames) {
                     let resGameAreaRanges = yield this.serverConfigService.getServerConfig({ name: 'GameAreaRanges' });
                     let GameAreaRanges = JSON.parse(resGameAreaRanges.value).value;
-                    const actionsLog = yield ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance.getActionsLog(GameAreaRanges, targetFileName);
+                    let actionsLog = yield ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance.getActionsLog(GameAreaRanges, targetFileName);
+                    unrecognizedLogs = unrecognizedLogs.concat(actionsLog.filter(T => (T === null || T === void 0 ? void 0 : T.unrecognized) === true).map(T => { T.fileName = targetFileName; return T; }));
+                    actionsLog = actionsLog.filter(T => (T === null || T === void 0 ? void 0 : T.unrecognized) !== true);
                     for (let actionLog of actionsLog) {
                         if (resGetLatestRecordTime && actionLog && actionLog.createdTimeStamp && resGetLatestRecordTime > actionLog.createdTimeStamp) {
                             continue;
@@ -755,7 +838,7 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
                         rawActionsLogsJsonArray.push(actionLog);
                     }
                 }
-                resolve(rawActionsLogsJsonArray);
+                resolve([rawActionsLogsJsonArray, unrecognizedLogs]);
             }
             catch (e) {
                 (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, e.toString());
@@ -786,7 +869,7 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
     }
     proccessViolationsLogs(violationsLogFileNames) {
         return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
-            let targetFileNames = [], resGetLatestRecordTime = null;
+            let targetFileNames = [], unrecognizedLogs = [], resGetLatestRecordTime = null;
             try {
                 resGetLatestRecordTime = yield this.violationsRecordService.getLatestRecordTime();
                 resGetLatestRecordTime = resGetLatestRecordTime ? resGetLatestRecordTime : null;
@@ -819,7 +902,9 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
                 for (let targetFileName of targetFileNames) {
                     let resGameAreaRanges = yield this.serverConfigService.getServerConfig({ name: 'GameAreaRanges' });
                     let GameAreaRanges = JSON.parse(resGameAreaRanges.value).value;
-                    const violationsLog = yield ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance.getViolationsLog(GameAreaRanges, targetFileName);
+                    let violationsLog = yield ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance.getViolationsLog(GameAreaRanges, targetFileName);
+                    unrecognizedLogs = unrecognizedLogs.concat(violationsLog.filter(T => (T === null || T === void 0 ? void 0 : T.unrecognized) === true).map(T => { T.fileName = targetFileName; return T; }));
+                    violationsLog = violationsLog.filter(T => (T === null || T === void 0 ? void 0 : T.unrecognized) !== true);
                     for (let violationLog of violationsLog) {
                         if (resGetLatestRecordTime && violationLog && violationLog.createdTimeStamp && resGetLatestRecordTime > violationLog.createdTimeStamp) {
                             continue;
@@ -838,7 +923,7 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
                         rawViolationsLogsJsonArray.push(violationLog);
                     }
                 }
-                resolve(rawViolationsLogsJsonArray);
+                resolve([rawViolationsLogsJsonArray, unrecognizedLogs]);
             }
             catch (e) {
                 (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, e.toString());
@@ -867,7 +952,7 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
     }
     proccessEconomyLogs(economyLogFileNames) {
         return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
-            let targetFileNames = [], resGetLatestRecordTime = null;
+            let targetFileNames = [], unrecognizedLogs = [], resGetLatestRecordTime = null;
             try {
                 resGetLatestRecordTime = yield this.economyService.getLatestRecordTime();
                 resGetLatestRecordTime = resGetLatestRecordTime ? resGetLatestRecordTime : null;
@@ -900,7 +985,9 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
                 for (let targetFileName of targetFileNames) {
                     let resGameAreaRanges = yield this.serverConfigService.getServerConfig({ name: 'GameAreaRanges' });
                     let GameAreaRanges = JSON.parse(resGameAreaRanges.value).value;
-                    const economysLog = yield ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance.getEconomyLog(GameAreaRanges, targetFileName);
+                    let economysLog = yield ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance.getEconomyLog(GameAreaRanges, targetFileName);
+                    unrecognizedLogs = unrecognizedLogs.concat(economysLog.filter(T => (T === null || T === void 0 ? void 0 : T.unrecognized) === true).map(T => { T.fileName = targetFileName; return T; }));
+                    economysLog = economysLog.filter(T => (T === null || T === void 0 ? void 0 : T.unrecognized) !== true);
                     for (let economyLog of economysLog) {
                         if (resGetLatestRecordTime && economyLog && economyLog.createdTimeStamp && resGetLatestRecordTime > economyLog.createdTimeStamp) {
                             continue;
@@ -919,7 +1006,7 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
                         rawEconomyLogsJsonArray.push(economyLog);
                     }
                 }
-                resolve(rawEconomyLogsJsonArray);
+                resolve([rawEconomyLogsJsonArray, unrecognizedLogs]);
             }
             catch (e) {
                 (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, e.toString());
@@ -938,6 +1025,229 @@ let ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLo
                 }
                 catch (e) {
                     (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, `[error]save economy failed, keyword:${JSON.stringify(economyLog)}`, e.toString());
+                }
+                resolve(true);
+            }
+            catch (e) {
+                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, e.toString());
+                resolve(false);
+            }
+        }));
+    }
+    proccessChestOwnershipLogs(chestOwnershipLogFileNames) {
+        return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+            let targetFileNames = [], unrecognizedLogs = [], resGetLatestRecordTime = null;
+            try {
+                resGetLatestRecordTime = yield this.chestOwnershipRecordService.getLatestRecordTime();
+                resGetLatestRecordTime = resGetLatestRecordTime ? resGetLatestRecordTime : null;
+                if (resGetLatestRecordTime && resGetLatestRecordTime) {
+                    let startIndex, index = 0;
+                    for (index = 0; index < chestOwnershipLogFileNames.length; index++) {
+                        const splitBackslash = chestOwnershipLogFileNames[index].split('\\');
+                        const rawDateTime = splitBackslash[splitBackslash.length - 1].substring(5, splitBackslash[splitBackslash.length - 1].indexOf('.'));
+                        const timeStampString = (moment(rawDateTime, 'YYYYMMDDHHmmss').valueOf() + 1000 * 60 * 60 * 8) + '';
+                        if (timeStampString >= resGetLatestRecordTime) {
+                            startIndex = index - 1 >= 0 ? index - 1 : 0;
+                            break;
+                        }
+                    }
+                    if (index === chestOwnershipLogFileNames.length) {
+                        startIndex = chestOwnershipLogFileNames.length - 1;
+                    }
+                    targetFileNames = startIndex !== undefined ? chestOwnershipLogFileNames.filter((T, index) => index >= startIndex) : [];
+                }
+                else {
+                    targetFileNames = chestOwnershipLogFileNames;
+                }
+            }
+            catch (e) {
+                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, e.toString());
+                resolve(false);
+            }
+            try {
+                const rawChestOwnershipLogsJsonArray = [];
+                let resGameAreaRanges = yield this.serverConfigService.getServerConfig({ name: 'GameAreaRanges' });
+                let GameAreaRanges = JSON.parse(resGameAreaRanges.value).value;
+                for (let targetFileName of targetFileNames) {
+                    let chestOwnershipLogs = yield ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance.getChestOwnershipLog(GameAreaRanges, targetFileName);
+                    unrecognizedLogs = unrecognizedLogs.concat(chestOwnershipLogs.filter(T => (T === null || T === void 0 ? void 0 : T.unrecognized) === true).map(T => { T.fileName = targetFileName; return T; }));
+                    chestOwnershipLogs = chestOwnershipLogs.filter(T => (T === null || T === void 0 ? void 0 : T.unrecognized) !== true);
+                    for (let chestOwnershipLog of chestOwnershipLogs) {
+                        if (resGetLatestRecordTime && chestOwnershipLog && chestOwnershipLog.createdTimeStamp && resGetLatestRecordTime > chestOwnershipLog.createdTimeStamp) {
+                            continue;
+                        }
+                        const checkChestOwnershipMessageParams = {
+                            fromScumId: chestOwnershipLog.fromScumId,
+                            fromSteamId: chestOwnershipLog.fromSteamId,
+                            toScumId: chestOwnershipLog.toScumId,
+                            toSteamId: chestOwnershipLog.toSteamId,
+                            chestId: chestOwnershipLog.chestId,
+                            createdTimeStamp: chestOwnershipLog.createdTimeStamp,
+                        };
+                        const resCheckChestOwnershipMessage = yield this.chestOwnershipRecordService.getChestOwnershipRecord(checkChestOwnershipMessageParams);
+                        if (resCheckChestOwnershipMessage && resCheckChestOwnershipMessage.id) {
+                            continue;
+                        }
+                        rawChestOwnershipLogsJsonArray.push(chestOwnershipLog);
+                    }
+                }
+                resolve([rawChestOwnershipLogsJsonArray, unrecognizedLogs]);
+            }
+            catch (e) {
+                (0, morgan_log_1.logServerActions2ViolationsLogLog)(e.toString());
+                resolve(false);
+            }
+        }));
+    }
+    proccessChestOwnershipLog(chestOwnershipLog) {
+        return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                try {
+                    const resSaveChestOwnershipRecord = yield this.chestOwnershipRecordService.saveChestOwnershipRecord(chestOwnershipLog.fromScumId, chestOwnershipLog.fromSteamId, chestOwnershipLog.toScumId, chestOwnershipLog.toSteamId, chestOwnershipLog.chestId, chestOwnershipLog.createdTimeStamp, chestOwnershipLog.rawText);
+                    if (!resSaveChestOwnershipRecord) {
+                    }
+                }
+                catch (e) {
+                    (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, e.toString());
+                }
+                resolve(true);
+            }
+            catch (e) {
+                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, e.toString());
+                resolve(false);
+            }
+        }));
+    }
+    proccessVehicleDestructionLogs(vehicleDestructionLogFileNames) {
+        return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+            let targetFileNames = [], unrecognizedLogs = [], resGetLatestRecordTime = null;
+            try {
+                resGetLatestRecordTime = yield this.vehicleDestructionRecordService.getLatestRecordTime();
+                resGetLatestRecordTime = resGetLatestRecordTime ? resGetLatestRecordTime : null;
+                if (resGetLatestRecordTime && resGetLatestRecordTime) {
+                    let startIndex, index = 0;
+                    for (index = 0; index < vehicleDestructionLogFileNames.length; index++) {
+                        const splitBackslash = vehicleDestructionLogFileNames[index].split('\\');
+                        const rawDateTime = splitBackslash[splitBackslash.length - 1].substring(5, splitBackslash[splitBackslash.length - 1].indexOf('.'));
+                        const timeStampString = (moment(rawDateTime, 'YYYYMMDDHHmmss').valueOf() + 1000 * 60 * 60 * 8) + '';
+                        if (timeStampString >= resGetLatestRecordTime) {
+                            startIndex = index - 1 >= 0 ? index - 1 : 0;
+                            break;
+                        }
+                    }
+                    if (index === vehicleDestructionLogFileNames.length) {
+                        startIndex = vehicleDestructionLogFileNames.length - 1;
+                    }
+                    targetFileNames = startIndex !== undefined ? vehicleDestructionLogFileNames.filter((T, index) => index >= startIndex) : [];
+                }
+                else {
+                    targetFileNames = vehicleDestructionLogFileNames;
+                }
+            }
+            catch (e) {
+                resolve(false);
+            }
+            try {
+                const rawVehicleDestructionLogsJsonArray = [];
+                let resGameAreaRanges = yield this.serverConfigService.getServerConfig({ name: 'GameAreaRanges' });
+                let GameAreaRanges = JSON.parse(resGameAreaRanges.value).value;
+                for (let targetFileName of targetFileNames) {
+                    let vehicleDestructionLogs = yield ServerSchedulesNitradoServerLogQueueService_1.nitradoLogsInstance.getVehicleDestructionLog(GameAreaRanges, targetFileName);
+                    unrecognizedLogs = unrecognizedLogs.concat(vehicleDestructionLogs.filter(T => (T === null || T === void 0 ? void 0 : T.unrecognized) === true).map(T => { T.fileName = targetFileName; return T; }));
+                    vehicleDestructionLogs = vehicleDestructionLogs.filter(T => (T === null || T === void 0 ? void 0 : T.unrecognized) !== true);
+                    for (let vehicleDestructionLog of vehicleDestructionLogs) {
+                        if (resGetLatestRecordTime && vehicleDestructionLog && vehicleDestructionLog.createdTimeStamp && resGetLatestRecordTime > vehicleDestructionLog.createdTimeStamp) {
+                            continue;
+                        }
+                        const checkVehicleDestructionMessageParams = {
+                            ownerScumId: vehicleDestructionLog.ownerScumId,
+                            ownerSteamId: vehicleDestructionLog.ownerSteamId,
+                            ownerSessionId: vehicleDestructionLog.ownerSessionId,
+                            actionType: vehicleDestructionLog.actionType,
+                            vehicleType: vehicleDestructionLog.vehicleType,
+                            vehicleId: vehicleDestructionLog.vehicleId,
+                            locations: vehicleDestructionLog.locations,
+                            area: vehicleDestructionLog.area,
+                            createdTimeStamp: vehicleDestructionLog.createdTimeStamp,
+                        };
+                        const resCheckVehicleDestruction = yield this.vehicleDestructionRecordService.getVehicleDestructionRecord(checkVehicleDestructionMessageParams);
+                        if (resCheckVehicleDestruction && resCheckVehicleDestruction.id) {
+                            continue;
+                        }
+                        rawVehicleDestructionLogsJsonArray.push(vehicleDestructionLog);
+                    }
+                }
+                resolve([rawVehicleDestructionLogsJsonArray, unrecognizedLogs]);
+            }
+            catch (e) {
+                (0, morgan_log_1.logServerActions2ViolationsLogLog)(e.toString());
+                resolve(false);
+            }
+        }));
+    }
+    proccessVehicleDestructionLog(vehicleDestructionLog) {
+        return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                try {
+                    const resSaveVehicleDestructionRecord = yield this.vehicleDestructionRecordService.saveVehicleDestructionRecord(vehicleDestructionLog.ownerScumId, vehicleDestructionLog.ownerSteamId, vehicleDestructionLog.ownerSessionId, vehicleDestructionLog.actionType, vehicleDestructionLog.vehicleType, vehicleDestructionLog.vehicleId, vehicleDestructionLog.locations, vehicleDestructionLog.area, vehicleDestructionLog.createdTimeStamp, vehicleDestructionLog.rawText);
+                    if (!resSaveVehicleDestructionRecord) {
+                    }
+                }
+                catch (e) {
+                    (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, e.toString());
+                }
+                resolve(true);
+            }
+            catch (e) {
+                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, e.toString());
+                resolve(false);
+            }
+        }));
+    }
+    processUnrecognizedLogs(rawUnrecognizedLogs) {
+        return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+            const rawUnrecognizedLogsJsonArray = [];
+            try {
+                for (let rawUnrecognizedLog of rawUnrecognizedLogs) {
+                    const checkUnrecognizedLogParams = {
+                        fileName: rawUnrecognizedLog.fileName,
+                        rawText: rawUnrecognizedLog.rawText,
+                        createdTimeStamp: rawUnrecognizedLog.createdTimeStamp,
+                    };
+                    const resCheckVehicleDestruction = yield this.unrecognizedRecordService.getUnrecognizedRecord(checkUnrecognizedLogParams);
+                    if (resCheckVehicleDestruction && resCheckVehicleDestruction.id) {
+                        continue;
+                    }
+                    rawUnrecognizedLogsJsonArray.push(rawUnrecognizedLog);
+                }
+            }
+            catch (e) {
+                resolve(false);
+            }
+            try {
+                let unrecognizedProccessedNum = 0;
+                let batchArray = [];
+                batchArray = [...batchArray, ...rawUnrecognizedLogsJsonArray.map(T => (this.proccessUnrecognizedLog(T)))];
+                unrecognizedProccessedNum = rawUnrecognizedLogsJsonArray.length;
+                yield Promise.all(batchArray);
+                resolve({ unrecognizedProccessedNum });
+            }
+            catch (e) {
+                (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, e.toString());
+                resolve(false);
+            }
+        }));
+    }
+    proccessUnrecognizedLog(unrecognizedLog) {
+        return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                try {
+                    const resSaveUnrecognizedRecord = yield this.unrecognizedRecordService.saveUnrecognizedRecord(unrecognizedLog.fileName, unrecognizedLog.rawText, unrecognizedLog.createdTimeStamp);
+                    if (!resSaveUnrecognizedRecord) {
+                    }
+                }
+                catch (e) {
+                    (0, morgan_log_1.logServerActions2ViolationsLogLog)(true, e.toString());
                 }
                 resolve(true);
             }
@@ -998,7 +1308,10 @@ ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLogQue
         chat_message_service_1.ChatMessageService,
         actions_record_service_1.ActionsRecordService,
         violations_record_service_1.ViolationsRecordService,
-        economy_service_1.EconomyService])
+        economy_service_1.EconomyService,
+        chest_ownership_record_service_1.ChestOwnershipRecordService,
+        vehicle_destruction_record_service_1.VehicleDestructionRecordService,
+        unrecognized_record_service_1.UnrecognizedRecordService])
 ], ServerSchedulesNitradoServerLogQueueService);
 exports.ServerSchedulesNitradoServerLogQueueService = ServerSchedulesNitradoServerLogQueueService;
 //# sourceMappingURL=server-schedules.nitrado-server-log.queue.service.js.map

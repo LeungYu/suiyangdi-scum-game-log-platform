@@ -27,6 +27,12 @@ const chat_message_service_1 = require("../chat-message/chat-message.service");
 const actions_record_service_1 = require("../actions-record/actions-record.service");
 const violations_record_entity_1 = require("../../entity/violations-record.entity");
 const violations_record_service_1 = require("../violations-record/violations-record.service");
+const chest_ownership_record_entity_1 = require("../../entity/chest-ownership-record.entity");
+const chest_ownership_record_service_1 = require("../chest-ownership-record/chest-ownership-record.service");
+const vehicle_destruction_record_entity_1 = require("../../entity/vehicle-destruction-record.entity");
+const vehicle_destruction_record_service_1 = require("../vehicle-destruction-record/vehicle-destruction-record.service");
+const unrecognized_record_entity_1 = require("../../entity/unrecognized-record.entity");
+const unrecognized_record_service_1 = require("../unrecognized-record/unrecognized-record.service");
 const economy_entity_1 = require("../../entity/economy.entity");
 const economy_service_1 = require("../economy/economy.service");
 let ServerSchedulesModule = class ServerSchedulesModule {
@@ -42,6 +48,9 @@ ServerSchedulesModule = __decorate([
                 actions_record_entity_1.ActionsRecord,
                 violations_record_entity_1.ViolationsRecord,
                 economy_entity_1.Economy,
+                chest_ownership_record_entity_1.ChestOwnershipRecord,
+                vehicle_destruction_record_entity_1.VehicleDestructionRecord,
+                unrecognized_record_entity_1.UnrecognizedRecord,
             ])],
         providers: [
             server_config_service_1.ServerConfigService,
@@ -56,6 +65,9 @@ ServerSchedulesModule = __decorate([
             actions_record_service_1.ActionsRecordService,
             violations_record_service_1.ViolationsRecordService,
             economy_service_1.EconomyService,
+            chest_ownership_record_service_1.ChestOwnershipRecordService,
+            vehicle_destruction_record_service_1.VehicleDestructionRecordService,
+            unrecognized_record_service_1.UnrecognizedRecordService,
         ],
     })
 ], ServerSchedulesModule);

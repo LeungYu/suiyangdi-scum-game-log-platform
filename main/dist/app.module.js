@@ -25,6 +25,9 @@ const actions_record_module_1 = require("./modules/actions-record/actions-record
 const chat_message_module_1 = require("./modules/chat-message/chat-message.module");
 const violations_record_module_1 = require("./modules/violations-record/violations-record.module");
 const economy_module_1 = require("./modules/economy/economy.module");
+const chest_ownership_record_module_1 = require("./modules/chest-ownership-record/chest-ownership-record.module");
+const unrecognized_record_module_1 = require("./modules/unrecognized-record/unrecognized-record.module");
+const vehicle_destruction_record_module_1 = require("./modules/vehicle-destruction-record/vehicle-destruction-record.module");
 const auth_module_1 = require("./modules/auth/auth.module");
 const cron_service_1 = require("./cron.service");
 let AppModule = class AppModule {
@@ -52,6 +55,9 @@ AppModule = __decorate([
             chat_message_module_1.ChatMessageModule,
             violations_record_module_1.ViolationsRecordModule,
             economy_module_1.EconomyModule,
+            chest_ownership_record_module_1.ChestOwnershipRecordModule,
+            unrecognized_record_module_1.UnrecognizedRecordModule,
+            vehicle_destruction_record_module_1.VehicleDestructionRecordModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

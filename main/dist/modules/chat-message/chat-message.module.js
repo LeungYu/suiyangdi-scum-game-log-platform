@@ -13,7 +13,6 @@ const chat_message_service_1 = require("./chat-message.service");
 const chat_message_admin_sys_controller_1 = require("./chat-message-admin-sys.controller");
 const chat_message_entity_1 = require("../../entity/chat-message.entity");
 const server_config_entity_1 = require("../../entity/server-config.entity");
-const server_config_service_1 = require("../server-config/server-config.service");
 let ChatMessageModule = class ChatMessageModule {
 };
 ChatMessageModule = __decorate([
@@ -22,7 +21,7 @@ ChatMessageModule = __decorate([
                 chat_message_entity_1.ChatMessage, server_config_entity_1.ServerConfig,
             ])],
         providers: [
-            chat_message_service_1.ChatMessageService, chat_message_service_1.ChatMessageService, server_config_service_1.ServerConfigService,
+            chat_message_service_1.ChatMessageService, chat_message_service_1.ChatMessageService
         ],
         controllers: [chat_message_admin_sys_controller_1.ChatMessageAdminSysController],
     })
