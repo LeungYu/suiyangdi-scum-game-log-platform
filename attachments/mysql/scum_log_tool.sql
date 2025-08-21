@@ -71,6 +71,7 @@ CREATE TABLE `chat_message` (
 -- ----------------------------
 -- Table structure for chest_ownership_record
 -- ----------------------------
+DROP TABLE IF EXISTS `chest_ownership_record`;
 CREATE TABLE `chest_ownership_record` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `fromScumId` varchar(50) COLLATE utf8mb4_bin DEFAULT NULL,
@@ -184,6 +185,7 @@ COMMIT;
 -- ----------------------------
 -- Table structure for unrecognized_record
 -- ----------------------------
+DROP TABLE IF EXISTS `unrecognized_record`;
 CREATE TABLE `unrecognized_record` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `fileName` varchar(50) COLLATE utf8mb4_bin DEFAULT NULL,
@@ -213,6 +215,7 @@ CREATE TABLE `user_login` (
 -- ----------------------------
 -- Table structure for vehicle_destruction_record
 -- ----------------------------
+DROP TABLE IF EXISTS `vehicle_destruction_record`;
 CREATE TABLE `vehicle_destruction_record` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ownerScumId` varchar(50) COLLATE utf8mb4_bin DEFAULT NULL,
